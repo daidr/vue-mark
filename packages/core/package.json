@@ -1,0 +1,15 @@
+{
+  "name": "@vuemark/core",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "devDependencies": {
+    "@types/mdast": "^4.0.3",
+    "remark": "^15.0.1",
+    "remark-directive": "^3.0.0",
+    "remark-frontmatter": "^5.0.0",
+    "remark-gfm": "^4.0.0",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.4"
+  }
+}

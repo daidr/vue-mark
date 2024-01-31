@@ -1,0 +1,14 @@
+{
+  "name": "dou-ui",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vitepress dev .",
+    "build": "vitepress build .",
+    "preview": "vitepress preview ."
+  },
+  "devDependencies": {
+    "vitepress": "1.0.0-rc.35",
+    "vue": "^3.4.8"
+  }
+}

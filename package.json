@@ -1,0 +1,25 @@
+{
+  "name": "vuemark",
+  "version": "1.0.0",
+  "description": "A customizable markdown rendering library for Vue.js",
+  "scripts": {
+    "docs:dev": "pnpm run -C docs dev",
+    "docs:build": "pnpm run -C docs build",
+    "docs:preview": "pnpm run -C docs preview",
+    "dev": "pnpm run -C packages/debug dev",
+    "build": "pnpm run -C packages/debug build"
+  },
+  "keywords": [
+    "frontend",
+    "markdown",
+    "vue"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@vuemark/core": "workspace:*",
+    "@vuemark/debug": "workspace:*",
+    "vitepress": "1.0.0-rc.35",
+    "vue": "^3.4.8"
+  }
+}
