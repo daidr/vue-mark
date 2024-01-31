@@ -6,7 +6,7 @@
     "docs:dev": "pnpm run -C docs dev",
     "docs:build": "pnpm run -C docs build",
     "docs:preview": "pnpm run -C docs preview",
-    "dev": "pnpm run -C packages/debug dev",
+    "dev": "pnpm run -C packages/debug dev --host",
     "build": "pnpm run -C packages/debug build"
   },
   "keywords": [

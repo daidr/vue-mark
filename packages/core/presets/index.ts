@@ -1,8 +1,4 @@
-import type {
-  Component,
-  FunctionalComponent,
-  ComponentPublicInstance,
-} from "vue";
+import { type Component } from "vue";
 
 export type InnerElement =
   | "paragraph"
@@ -31,28 +27,38 @@ export type InnerElement =
   | "linkReference"
   | "imageReference";
 
-export type ConfigItemValue =
-  | string
-  | {
-      type: "tag";
-      value: ((item: any) => string) | string;
-    }
-  | {
-      type: "component";
-      value: Component;
-    };
+export type ConfigItemValue = Component;
 
 export type PresetConfig = Record<string, ConfigItemValue>;
 
+import Text from "./components/Text.vue";
+import Paragraph from "./components/Paragraph.vue";
+import Heading from "./components/Heading.vue";
+import Delete from "./components/Delete.vue";
+import Blockquote from "./components/Blockquote.vue";
+import Strong from "./components/Strong.vue";
+import Emphasis from "./components/Emphasis.vue";
+import Link from "./components/Link.vue";
+import LinkReference from "./components/LinkReference.vue";
+import ThematicBreak from "./components/ThematicBreak.vue";
+import List from "./components/List.vue";
+import ListItem from "./components/ListItem.vue";
+import Code from "./components/Code.vue";
+import InlineCode from "./components/InlineCode.vue";
+
 export const PRESETS: PresetConfig = {
-  paragraph: "p",
-  heading: {
-    type: "tag",
-    value: (item: any) => `h${item.depth}`,
-  },
-  blockquote: "blockquote",
-  thematicBreak: "hr",
-  delete: "del",
-  strong: "strong",
-  emphasis: "em",
+  text: Text,
+  paragraph: Paragraph,
+  heading: Heading,
+  delete: Delete,
+  blockquote: Blockquote,
+  strong: Strong,
+  emphasis: Emphasis,
+  link: Link,
+  linkReference: LinkReference,
+  thematicBreak: ThematicBreak,
+  list: List,
+  listItem: ListItem,
+  code: Code,
+  inlineCode: InlineCode,
 };
