@@ -6,19 +6,33 @@ const md = ref(`---
 layout: solar-system
 ---
 
+# 测试文档
+
+## 表格测试
+
 | Syntax      | Description | Test Text     | hello |
 | :---        |    :----:   |          ---: |-------|
 | Header      | Title       | Here's this   | world |
 | Paragraph   | Text        | And more      | test  |
 
-I need to highlight these ==very important words==.
+## Task List 测试 （无样式）
 
 *   [ ] to do
 *   [x] done
 
-H~2~O
+## 图片引用测试
 
-X^2^
+![The San Juan Mountains are beautiful!][img]
+
+## 自定义组件测试
+
+:::gallery
+![p1](p1.png)
+![p2](p2.png)
+![p3](p3.png)
+:::
+
+## 代码块测试
 
 \`\`\`js
 console.log('hello world')
@@ -34,67 +48,69 @@ pure
 
 这是一段普通的文本，里面有\`内联代码\`嵌入。
 
-# Hi ~~Mars~~Venus!
+## 各种内联样式测试
 
-hello **world** __test__ _test_ *test* 111
+这是一段文本 **有加粗** __另一种加粗__ _斜体_ *另一种斜体* ~~删除线~~ ~~*又加粗又删除线*~~ ~另一种删除线~ ***加粗又斜体*** **_加粗又斜体_** ***_加粗又斜体_*** ~~***加粗又斜体又删除线***~~
 
-> #### The quarterly results look great!
+## 引用测试
+
+> #### 引用里有标题
 >
-> - Revenue was off the chart.
-> - Profits were higher than ever.
+> - 这是引用里的无序列表 111
+> - 看起来不错 222
 >
->  *Everything* is going according to **plan**.
->> 嵌套
+>  *内联样式* 看起来也应该没什么**问题**
+>> 这是嵌套
 
-1. First item
-2. Second item
-3. Third item
-    1. Indented item
-    2. Indented item
-        * one
-        * two
-4. Fourth item
+## 列表测试
 
-> [!NOTE]  
-> Highlights information that users should take into account, even when skimming.
+1. 这是有序列表的第一个元素
+2. 第二个元素
+3. 第三个元素
+    1. 嵌套一个有序列表
+        1. 嵌套另一个有序列表
+        2. 哈哈哈，有个emoji 😆
+    2. 第二个元素
+        * 嵌套一个无序列表
+        * 第二个元素
+4. 第四个元素
+    - [ ] 嵌套一个任务列表，未完成
+    - 这是一个普通的列表元素
+    - [x] 嵌套一个任务列表，已完成
 
-> [!TIP]
-> Optional information to help a user be more successful.
+## 脚注测试
 
-> [!IMPORTANT]  
-> Crucial information necessary for users to succeed.
+这是一段话，你不用知道我讲了什么[^1] 但是你要知道脚注能够让你在不打断你的话题的情况下引用相关信息。比如这里有第二个脚注[^bignote]
 
-> [!WARNING]  
-> Critical content demanding immediate user attention due to potential risks.
 
-> [!CAUTION]
-> Negative potential consequences of an action.
+[^1]: 这是第一个脚注。
+[^bignote]: 要注意脚注固定显示为数字，不会因为你的脚注标记改变标签内容。
 
-Using footnotes is fun![^1] They let you reference relevant information without disrupting the flow of what you’re trying to say.[^bignote]
-
-[^1]: This is the first footnote.
-[^bignote]: Here’s one with multiple paragraphs and code.
-
-    Indent paragraphs to include them in the footnote.
+    脚注里面可以嵌入很多东西
 
     \`\`\`
-    my code
+    比如这是一个代码块
     \`\`\`
 
-    Add as many paragraphs as you like.
+    也可以加入很多很多段落
 
-Text here and here and here.
-[Learn more about markdown and footnotes in markdown](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#footnotes)
+这里有一段文字，但是不在脚注里。你会发现脚注默认是在文末显示的。
+
+## 分隔线测试
 
 _________________
 
-![The San Juan Mountains are beautiful!](https://mdg.imgix.net/assets/images/san-juan-mountains.jpg?auto=format&fit=clip&q=40&w=1080 "San Juan Mountains")
+## 图片测试
 
-> :warning: **Warning:** Do not push the big red button.
+![这是图片的alt](https://mdg.imgix.net/assets/images/san-juan-mountains.jpg?auto=format&fit=clip&q=40&w=200 "这个图片有title")
 
-[hobbit-hole][1]
+## 链接引用测试
 
-[hobbit-hole2][2]
+[这是一个引用链接][1]
+
+[这个引用链接有title][2]
+
+## 链接测试
 
 [百度一下](https://www.baidu.com)
 
@@ -104,28 +120,63 @@ _________________
 
 [百度**一下**](https://www.baidu.com)
 
-:::gallery
-![p1](p1.png)
-:::
-
-[1]: https://en.wikipedia.org/wiki/Hobbit#Lifestyle
-[2]: https://en.wikipedia.org/wiki/Hobbit#Lifestyle "Hobbit lifestyles"
+[1]: https://www.google.com
+[2]: https://www.baidu.com "title部分：百度一下"
+[img]: https://mdg.imgix.net/assets/images/san-juan-mountains.jpg?auto=format&fit=clip&q=40&w=200 "这是图片的title"
 `)
 
 const customPresets
- = {
-   directive_gallery: defineAsyncComponent(() => import('./components/Gallery.vue')),
- }
+  = {
+    directive_gallery: defineAsyncComponent(() => import('./components/Gallery.vue')),
+  }
 
 const { VueMarkContent, FootnoteContent } = useVueMark(md, {
   customPresets,
 })
+
+const textareaRef = ref<HTMLTextAreaElement | null>(null)
+const viewRef = ref<HTMLDivElement | null>(null)
+
+const textareaPositive = ref(true)
+
+function onScroll() {
+  if (!textareaPositive.value) return
+  if (textareaRef.value && viewRef.value) {
+    const textareaScrollPercentage = textareaRef.value.scrollTop / (textareaRef.value.scrollHeight - textareaRef.value.clientHeight)
+
+    viewRef.value.scrollTop = (viewRef.value.scrollHeight - viewRef.value.clientHeight) * textareaScrollPercentage
+  }
+}
+
+function onViewScroll() {
+  if (textareaPositive.value) return
+  if (textareaRef.value && viewRef.value) {
+    const viewScrollPercentage = viewRef.value.scrollTop / (viewRef.value.scrollHeight - viewRef.value.clientHeight)
+
+    textareaRef.value.scrollTop = (textareaRef.value.scrollHeight - textareaRef.value.clientHeight) * viewScrollPercentage
+  }
+}
 </script>
 
 <template>
-  <textarea id="" v-model="md" name="" cols="100" rows="30" />
-  <VueMarkContent />
-  <FootnoteContent />
+  <div style="width: 50dvw; height: 100dvh; position: fixed; top: 0; left: 0;">
+    <textarea ref="textareaRef" v-model="md" style="width: calc(100% - 20px); height: calc(100% - 20px)" name="" cols="100" rows="30" @pointerover="() => textareaPositive = true" @scroll="onScroll" />
+  </div>
+
+  <div ref="viewRef" style="width: 50dvw; height: 100dvh; position: fixed; top: 0; right: 0; overflow: scroll;" @pointerover="() => textareaPositive = false" @scroll="onViewScroll">
+    <VueMarkContent />
+    <FootnoteContent />
+  </div>
 </template>
 
-<style scoped></style>
+<style>
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #333;
+}
+</style>
