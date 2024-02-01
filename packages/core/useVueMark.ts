@@ -1,4 +1,4 @@
-import type { Definition, FootnoteDefinition, Node, Parent } from 'mdast'
+import type { Definition, FootnoteDefinition, RootContent } from 'mdast'
 import remarkDirective from 'remark-directive'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkGfm from 'remark-gfm'
@@ -12,6 +12,7 @@ import {
   shallowRef,
   toValue,
   watch,
+  watchEffect,
 } from 'vue'
 import type {
   Component,
@@ -20,21 +21,24 @@ import type {
   ShallowRef,
   VNode,
 } from 'vue'
-import type { FootnoteDefinitionMap } from './types'
-
-import type { InnerElement } from './presets'
+import type {
+  FootnoteDefinitionMap,
+  LeafPartTypes,
+  ParentPartTypes,
+  PresetConfig,
+} from './types'
 import { PRESETS } from './presets'
 import { getNodeTextContent, isCustomBlock, isParent } from './utils'
 
 const processor = unified()
   .use(remarkParse)
   .use(remarkFrontmatter)
-  .use(remarkGfm)
+  .use(remarkGfm, { singleTilde: false })
   .use(remarkDirective)
   .freeze()
 
 export interface UseVueMarkOptions {
-  customBlocks?: Record<string, Component>
+  customPresets?: PresetConfig
   globalPrefix?: string
 }
 
@@ -53,8 +57,15 @@ export function useVueMark(
   value: MaybeRefOrGetter<string>,
   options?: UseVueMarkOptions,
 ): UseVueMarkReturn {
-  const { customBlocks = {}, globalPrefix = 'vuemark' } = options ?? {}
-  const ast = computed(() => processor.parse(toValue(value)))
+  const { customPresets = {} as PresetConfig, globalPrefix = 'vuemark' }
+    = options ?? {}
+  const computedValue = computed(() => toValue(value))
+  const ast = computed(() => processor.parse(computedValue.value))
+
+  watchEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log(ast.value)
+  })
 
   const toc: ComputedRef<VueMarkToc[]> = computed(() => {
     const toc: VueMarkToc[] = []
@@ -99,36 +110,49 @@ export function useVueMark(
     }
   }
 
-  const getRootComponent = (node: Parent | Node): VNode | string | null => {
+  const getRootComponent = (
+    node: RootContent,
+    index?: number,
+  ): VNode | string | null => {
     if (isParent(node)) {
-      const slotName: InnerElement | `block_${string}` = isCustomBlock(node)
-        ? `block_${node.name}`
-        : (node.type as InnerElement)
+      const partName: ParentPartTypes = isCustomBlock(node)
+        ? `directive_${node.name}`
+        : (node.type as ParentPartTypes)
 
-      if (slotName === 'footnoteDefinition') {
-        // 脚注定义
+      if (partName === 'footnoteDefinition') {
+        // 脚注定义part
         setFootnoteDefinition(node as FootnoteDefinition, () =>
           node.children.map(getRootComponent))
         return null
       }
 
-      if (slotName in customBlocks) {
-        // props自定义块
-        const element = customBlocks[slotName]!
-        return h(element, { item: node }, () =>
+      const element
+        = (customPresets[partName] as Component)
+        || (PRESETS[partName] as Component)
+
+      if (element) {
+        if (partName === 'table') {
+          return (h(
+            element,
+            { item: node, index },
+            {
+              head: () => getRootComponent(node.children[0], 0),
+              body: () =>
+                node.children.slice(1).map((child, i) =>
+                  getRootComponent(child, i + 1),
+                ),
+            },
+          ))
+        }
+
+        return h(element, { item: node, index }, () =>
           node.children.map(getRootComponent))
       }
 
-      if (PRESETS[slotName]) {
-        // 预设块
-        return h(PRESETS[slotName], { item: node }, () =>
-          node.children.map(getRootComponent))
-      }
-
-      // 未知块
+      // 未知parent part
       return h(
         'div',
-        { class: ['unknown-block', slotName] },
+        { class: ['unknown-parent-part', partName], index },
         node.children.map(getRootComponent),
       )
     }
@@ -137,28 +161,25 @@ export function useVueMark(
     //     return node.value
     // }
 
-    // 内联元素
-    const slotName: InnerElement = `${node.type}` as InnerElement
+    // 叶子元素
+    const partName: LeafPartTypes = `${node.type}` as LeafPartTypes
 
-    if (slotName === 'definition') {
+    if (partName === 'definition') {
       // 链接定义
       setDefinition(node as Definition)
       return null
     }
 
-    if (slotName in customBlocks) {
-      // props自定义内联元素
-      const element = customBlocks[slotName]!
-      return h(element, { item: node })
+    const element
+      = (customPresets[partName] as Component)
+      || (PRESETS[partName] as Component)
+
+    if (element) {
+      return h(element, { item: node, index })
     }
 
-    if (PRESETS[slotName]) {
-      // 预设内联元素
-      return h(PRESETS[slotName], { item: node })
-    }
-
-    // 未知内联元素
-    return h('span', { class: ['unknown-inline', node.type] })
+    // 未知叶子part
+    return h('span', { class: ['unknown-leaf-part', node.type], index })
   }
 
   const markVNodes = shallowRef(ast.value.children.map(getRootComponent))
@@ -183,8 +204,8 @@ export function useVueMark(
     name: 'FootnoteContent',
     setup() {
       return () => {
-        const element
-          = customBlocks.footnoteContainer ?? PRESETS.footnoteContainer
+        const element: Component
+          = customPresets.footnoteContainer ?? PRESETS.footnoteContainer!
         return h(element, {
           footnoteDefinitions: footnoteDefinitions.value,
           globalPrefix,

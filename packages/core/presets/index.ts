@@ -1,5 +1,4 @@
-import type { Component } from 'vue'
-import type { FootnoteDefinitionMap } from '../types'
+import type { PresetConfig } from '../types'
 import Text from './components/Text.vue'
 import Paragraph from './components/Paragraph.vue'
 import Heading from './components/Heading.vue'
@@ -15,44 +14,12 @@ import ListItem from './components/ListItem.vue'
 import Code from './components/Code.vue'
 import InlineCode from './components/InlineCode.vue'
 import Image from './components/Image.vue'
+import Break from './components/Break.vue'
 import FootnoteReference from './components/FootnoteReference.vue'
 import FootnoteContainer from './components/FootnoteContainer.vue'
-
-export type InnerElement =
-  | 'paragraph'
-  | 'image'
-  | 'link'
-  | 'list'
-  | 'listItem'
-  | 'heading'
-  | 'blockquote'
-  | 'code'
-  | 'inlineCode'
-  | 'table'
-  | 'tableRow'
-  | 'tableCell'
-  | 'thematicBreak'
-  | 'break'
-  | 'delete'
-  | 'strong'
-  | 'emphasis'
-  | 'root'
-  | 'text'
-  | 'footnote'
-  | 'footnoteDefinition'
-  | 'definition'
-  | 'footnoteReference'
-  | 'linkReference'
-  | 'imageReference'
-
-export type ConfigItemValue = Component
-
-export type PresetConfig = Record<string, ConfigItemValue> & {
-  footnoteContainer: Component<{
-    footnoteDefinitions: FootnoteDefinitionMap
-    globalPrefix: string
-  }>
-}
+import Table from './components/Table.vue'
+import TableRow from './components/TableRow.vue'
+import TableCell from './components/TableCell.vue'
 
 export const PRESETS: PresetConfig = {
   text: Text,
@@ -70,6 +37,10 @@ export const PRESETS: PresetConfig = {
   code: Code,
   inlineCode: InlineCode,
   image: Image,
+  break: Break,
   footnoteReference: FootnoteReference,
   footnoteContainer: FootnoteContainer,
+  table: Table,
+  tableRow: TableRow,
+  tableCell: TableCell,
 }

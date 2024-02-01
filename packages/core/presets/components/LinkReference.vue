@@ -4,6 +4,7 @@ import { type Ref, computed, inject } from 'vue'
 
 const props = defineProps<{
   item: LinkReference
+  index?: number
 }>()
 
 const definitions = inject<Ref<Record<string, Definition>>>('definitions')!

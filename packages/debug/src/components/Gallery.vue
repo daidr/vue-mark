@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import type { CustomDirective } from '@vuemark/core'
+
 defineProps<{
-  item: Node
+  item: CustomDirective
+  index?: number
 }>()
 </script>
 

@@ -3,6 +3,7 @@ import type { Text } from 'mdast'
 
 defineProps<{
   item: Text
+  index?: number
 }>()
 </script>
 

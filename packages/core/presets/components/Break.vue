@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { InlineCode } from 'mdast'
+import type { Break } from 'mdast'
 
 defineProps<{
-  item: InlineCode
+  item: Break
   index?: number
 }>()
 </script>
 
 <template>
-  <code>{{ item.value }}</code>
+  <br>
 </template>

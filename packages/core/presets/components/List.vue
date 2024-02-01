@@ -3,6 +3,7 @@ import type { List } from 'mdast'
 
 defineProps<{
   item: List
+  index?: number
 }>()
 </script>
 

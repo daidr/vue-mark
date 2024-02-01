@@ -1,2 +1,7 @@
-export { useVueMark } from "./useVueMark";
-export type { PresetConfig } from "./presets";
+export { useVueMark } from './useVueMark'
+export type {
+  PresetConfig,
+  CustomDirective,
+  FootnoteDefinitionMap,
+} from './types'
+export type * from 'mdast'

@@ -3,6 +3,7 @@ import type { ThematicBreak } from 'mdast'
 
 defineProps<{
   item: ThematicBreak
+  index?: number
 }>()
 </script>
 

@@ -3,6 +3,7 @@ import type { Link } from 'mdast'
 
 defineProps<{
   item: Link
+  index?: number
 }>()
 </script>
 

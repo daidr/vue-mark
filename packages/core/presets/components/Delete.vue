@@ -3,6 +3,7 @@ import type { Delete } from 'mdast'
 
 defineProps<{
   item: Delete
+  index?: number
 }>()
 </script>
 

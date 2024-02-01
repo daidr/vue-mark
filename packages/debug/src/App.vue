@@ -6,6 +6,20 @@ const md = ref(`---
 layout: solar-system
 ---
 
+| Syntax      | Description | Test Text     | hello |
+| :---        |    :----:   |          ---: |-------|
+| Header      | Title       | Here's this   | world |
+| Paragraph   | Text        | And more      | test  |
+
+I need to highlight these ==very important words==.
+
+*   [ ] to do
+*   [x] done
+
+H~2~O
+
+X^2^
+
 \`\`\`js
 console.log('hello world')
 \`\`\`
@@ -98,12 +112,13 @@ _________________
 [2]: https://en.wikipedia.org/wiki/Hobbit#Lifestyle "Hobbit lifestyles"
 `)
 
-const customBlocks = {
-  block_gallery: defineAsyncComponent(() => import('./components/Gallery.vue')),
-}
+const customPresets
+ = {
+   directive_gallery: defineAsyncComponent(() => import('./components/Gallery.vue')),
+ }
 
 const { VueMarkContent, FootnoteContent } = useVueMark(md, {
-  customBlocks,
+  customPresets,
 })
 </script>
 

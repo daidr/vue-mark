@@ -8,7 +8,10 @@ defineProps<{
 </script>
 
 <template>
-  <section vuemark-footnotes>
+  <section class="vuemark-footnotes">
+    <h2 id="footnote-label" class="sr-only">
+      Footnotes
+    </h2>
     <ol>
       <li
         v-for="footnote of (Object.values(footnoteDefinitions) as FootnoteDefinitionMap[string][])"
@@ -16,7 +19,7 @@ defineProps<{
       >
         <component :is="footnote.render" />
         <a
-          vuemark-footnote-backref :href="`#user-content-${globalPrefix}-fnref-${footnote.index + 1}`"
+          class="vuemark-footnote-backref" :href="`#user-content-${globalPrefix}-fnref-${footnote.index + 1}`"
           :aria-label="`Back to reference ${footnote.index + 1}`"
         >↩</a>
       </li>

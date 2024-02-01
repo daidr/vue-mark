@@ -1,4 +1,4 @@
-import type { Node, Parent, Text } from 'mdast'
+import type { Node, Parent, RootContent, Text } from 'mdast'
 
 export function isParent(node: Node): node is Parent {
   return 'children' in node
@@ -26,4 +26,11 @@ export function getNodeTextContent(node: Node | Parent): string {
     return node.value
   }
   return ''
+}
+
+export function getRawTextFromNode(raw: string, node: RootContent): string {
+  if (!node.position) {
+    return ''
+  }
+  return raw.slice(node.position.start.offset, node.position.end.offset)
 }

@@ -1,22 +1,15 @@
-<script lang="ts">
-import { h } from 'vue'
+<script setup lang="ts">
 import type { Heading } from 'mdast'
 import { getNodeTextContent } from '../../utils'
 
-export default {
-  name: 'Heading',
-  props: {
-    item: {
-      type: Object,
-      required: true,
-    },
-  },
-  setup(props, { slots }) {
-    const { item } = props as { item: Heading }
-    const Tag = `h${item.depth}`
-    return () => h(Tag, {
-      id: getNodeTextContent(item),
-    }, slots.default?.())
-  },
-}
+defineProps<{
+  item: Heading
+  index?: number
+}>()
 </script>
+
+<template>
+  <component :is="`h${item.depth}`" :id="getNodeTextContent(item)">
+    <slot />
+  </component>
+</template>

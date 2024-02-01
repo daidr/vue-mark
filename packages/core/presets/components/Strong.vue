@@ -3,6 +3,7 @@ import type { Strong } from 'mdast'
 
 defineProps<{
   item: Strong
+  index?: number
 }>()
 </script>
 
