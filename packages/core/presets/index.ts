@@ -14,6 +14,7 @@ import List from './components/List.vue'
 import ListItem from './components/ListItem.vue'
 import Code from './components/Code.vue'
 import InlineCode from './components/InlineCode.vue'
+import Image from './components/Image.vue'
 import FootnoteReference from './components/FootnoteReference.vue'
 import FootnoteContainer from './components/FootnoteContainer.vue'
 
@@ -68,6 +69,7 @@ export const PRESETS: PresetConfig = {
   listItem: ListItem,
   code: Code,
   inlineCode: InlineCode,
+  image: Image,
   footnoteReference: FootnoteReference,
   footnoteContainer: FootnoteContainer,
 }
