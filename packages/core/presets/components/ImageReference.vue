@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { Definition, LinkReference } from 'mdast'
+import type { Definition, ImageReference } from 'mdast'
 import { type Ref, computed, inject } from 'vue'
 
 const props = defineProps<{
-  item: LinkReference
+  item: ImageReference
   index?: number
 }>()
 
@@ -13,7 +13,5 @@ const def = computed(() => definitions.value && definitions.value[props.item.ide
 </script>
 
 <template>
-  <a v-if="def" rel="nofollow noopener noreferrer" :href="def.url" :title="def.title || undefined" target="_blank">
-    <slot />
-  </a>
+  <img v-if="def" :src="def.url" :alt="item.alt || undefined" :title="def.title || undefined" class="vuemark-image">
 </template>

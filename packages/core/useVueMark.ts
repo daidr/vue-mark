@@ -33,7 +33,7 @@ import { getNodeTextContent, isCustomBlock, isParent } from './utils'
 const processor = unified()
   .use(remarkParse)
   .use(remarkFrontmatter)
-  .use(remarkGfm, { singleTilde: false })
+  .use(remarkGfm)
   .use(remarkDirective)
   .freeze()
 

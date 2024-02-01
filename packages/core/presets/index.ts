@@ -20,6 +20,7 @@ import FootnoteContainer from './components/FootnoteContainer.vue'
 import Table from './components/Table.vue'
 import TableRow from './components/TableRow.vue'
 import TableCell from './components/TableCell.vue'
+import ImageReference from './components/ImageReference.vue'
 
 export const PRESETS: PresetConfig = {
   text: Text,
@@ -37,6 +38,7 @@ export const PRESETS: PresetConfig = {
   code: Code,
   inlineCode: InlineCode,
   image: Image,
+  imageReference: ImageReference,
   break: Break,
   footnoteReference: FootnoteReference,
   footnoteContainer: FootnoteContainer,
