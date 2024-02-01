@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { FootnoteReference } from 'mdast'
-import { type ShallowRef, inject } from 'vue'
+import { type ShallowRef, computed, inject } from 'vue'
 import type { FootnoteDefinitionMap } from '../../types'
 
-defineProps<{
+const props = defineProps<{
   item: FootnoteReference
   index?: number
 }>()
@@ -11,18 +11,20 @@ defineProps<{
 const globalPrefix = inject<string>('globalPrefix')!
 const footnoteDefinitions = inject<ShallowRef<
     FootnoteDefinitionMap
->>('footnoteDefinitions')!
+  >>('footnoteDefinitions')!
+
+const def = computed(() => footnoteDefinitions.value && footnoteDefinitions.value[props.item.identifier])
 </script>
 
 <template>
-  <sup>
+  <sup v-if="def">
     <a
-      :id="`user-content-${globalPrefix}-fnref-${footnoteDefinitions[item.identifier].index + 1}`"
-      :href="`#user-content-${globalPrefix}-fn-${footnoteDefinitions[item.identifier].index + 1}`"
+      :id="`user-content-${globalPrefix}-fnref-${def.index + 1}`"
+      :href="`#user-content-${globalPrefix}-fn-${def.index + 1}`"
       class="vuemark-footnote-ref"
       aria-describedby="footnote-label"
     >
-      {{ footnoteDefinitions[item.identifier].index + 1 }}
+      {{ def.index + 1 }}
     </a>
   </sup>
 </template>
