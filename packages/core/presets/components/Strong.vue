@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { type Strong } from 'mdast';
+import type { Strong } from 'mdast'
 
 defineProps<{
-    item: Strong;
-}>();
+  item: Strong
+}>()
 </script>
 
 <template>
-    <strong>
-        <slot />
-    </strong>
+  <strong>
+    <slot />
+  </strong>
 </template>

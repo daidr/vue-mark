@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { type Delete } from 'mdast';
+import type { Delete } from 'mdast'
 
 defineProps<{
-    item: Delete;
-}>();
+  item: Delete
+}>()
 </script>
 
 <template>
-    <del>
-        <slot />
-    </del>
+  <del>
+    <slot />
+  </del>
 </template>

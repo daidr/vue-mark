@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { type Text } from 'mdast';
+import type { Text } from 'mdast'
 
 defineProps<{
-    item: Text;
-}>();
+  item: Text
+}>()
 </script>
 
 <template>
-    {{ item.value }}
+  {{ item.value }}
 </template>

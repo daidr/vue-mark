@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { type Emphasis } from 'mdast';
+import type { Emphasis } from 'mdast'
 
 defineProps<{
-    item: Emphasis;
-}>();
+  item: Emphasis
+}>()
 </script>
 
 <template>
-    <em>
-        <slot />
-    </em>
+  <em>
+    <slot />
+  </em>
 </template>

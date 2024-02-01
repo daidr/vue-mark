@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { type ThematicBreak } from 'mdast';
+import type { ThematicBreak } from 'mdast'
 
 defineProps<{
-    item: ThematicBreak;
-}>();
+  item: ThematicBreak
+}>()
 </script>
 
 <template>
-    <hr />
+  <hr>
 </template>

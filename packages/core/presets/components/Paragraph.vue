@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { type Paragraph } from 'mdast';
+import type { Paragraph } from 'mdast'
 
 defineProps<{
-    item: Paragraph;
-}>();
+  item: Paragraph
+}>()
 </script>
 
 <template>
-    <p>
-        <slot />
-    </p>
+  <p>
+    <slot />
+  </p>
 </template>

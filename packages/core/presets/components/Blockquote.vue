@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { type Blockquote } from 'mdast';
+import type { Blockquote } from 'mdast'
 
 defineProps<{
-    item: Blockquote;
-}>();
+  item: Blockquote
+}>()
 </script>
 
 <template>
-    <blockquote>
-        <slot />
-    </blockquote>
+  <blockquote>
+    <slot />
+  </blockquote>
 </template>

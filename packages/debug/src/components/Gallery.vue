@@ -1,11 +1,11 @@
 <script setup lang="ts">
 defineProps<{
-    item: Node
+  item: Node
 }>()
 </script>
 
 <template>
-    {{ item }}
+  {{ item }}
 </template>
 
 <style scoped></style>

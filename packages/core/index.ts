@@ -1,3 +1,2 @@
-import VueMark from "./VueMark.vue";
+export { useVueMark } from "./useVueMark";
 export type { PresetConfig } from "./presets";
-export { VueMark };

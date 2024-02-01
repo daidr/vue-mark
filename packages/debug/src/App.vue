@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { VueMark } from '@vuemark/core'
-import { defineAsyncComponent, ref } from 'vue';
+import { useVueMark } from '@vuemark/core'
+import { defineAsyncComponent, ref } from 'vue'
 
 const md = ref(`---
 layout: solar-system
@@ -98,14 +98,19 @@ _________________
 [2]: https://en.wikipedia.org/wiki/Hobbit#Lifestyle "Hobbit lifestyles"
 `)
 
-const config = {
-    'block_gallery': defineAsyncComponent(() => import('./components/Gallery.vue')),
+const customBlocks = {
+  block_gallery: defineAsyncComponent(() => import('./components/Gallery.vue')),
 }
+
+const { VueMarkContent, FootnoteContent } = useVueMark(md, {
+  customBlocks,
+})
 </script>
 
 <template>
-    <textarea v-model="md" name="" id="" cols="100" rows="30"></textarea>
-    <VueMark :markdown="md" :custom-blocks="config" />
+  <textarea id="" v-model="md" name="" cols="100" rows="30" />
+  <VueMarkContent />
+  <FootnoteContent />
 </template>
 
 <style scoped></style>

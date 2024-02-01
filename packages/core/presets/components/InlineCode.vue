@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { type InlineCode } from 'mdast';
+import type { InlineCode } from 'mdast'
 
 defineProps<{
-    item: InlineCode;
-}>();
+  item: InlineCode
+}>()
 </script>
 
 <template>
-    <code>{{ item.value }}</code>
+  <code>{{ item.value }}</code>
 </template>

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { type ListItem } from 'mdast';
+import type { ListItem } from 'mdast'
 
 defineProps<{
-    item: ListItem;
-}>();
+  item: ListItem
+}>()
 </script>
 
 <template>
-    <li>
-        <slot />
-    </li>
+  <li>
+    <slot />
+  </li>
 </template>
