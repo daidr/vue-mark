@@ -17,8 +17,10 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@antfu/eslint-config": "^2.6.3",
     "@vuemark/core": "workspace:*",
     "@vuemark/debug": "workspace:*",
+    "eslint": "^8.56.0",
     "vitepress": "1.0.0-rc.35",
     "vue": "^3.4.8"
   }
