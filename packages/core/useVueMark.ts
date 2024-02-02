@@ -250,27 +250,46 @@ export function useVueMark(
     }
   }
 
+  let st = 0
+
   const markVNodes = shallowRef(processMarkVNodes(ast.value))
 
   function processMarkVNodes(root: Root) {
+    st = Date.now()
     definitions = {}
     footnoteDefinitions = {}
     hasFootnote.value = false
 
     const tempMarkVNodes: (VNode | string | null)[] = []
+    const deferred: [RootContent, number][] = []
 
     root.children.forEach((node, index) => {
+      if (node.type === 'yaml') {
+        return
+      }
+
       if (node.type === 'definition') {
         setDefinition(node)
-      } else if (node.type === 'footnoteDefinition') {
+        return
+      }
+
+      if (node.type === 'footnoteDefinition') {
         setFootnoteDefinition(node, () => {
           hasFootnote.value = true
           return node.children.map(getRootComponent)
         })
-      } else {
-        tempMarkVNodes.push(getRootComponent(node, index))
+        return
       }
+
+      deferred.push([node, index])
     })
+
+    deferred.forEach(([node, index]) => {
+      tempMarkVNodes.push(getRootComponent(node, index))
+    })
+
+    // eslint-disable-next-line no-console
+    console.log('processMarkVNodes', Date.now() - st, 'ms')
 
     return tempMarkVNodes
   }
