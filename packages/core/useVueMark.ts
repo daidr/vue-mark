@@ -1,4 +1,4 @@
-import type { Definition, FootnoteDefinition, RootContent } from 'mdast'
+import type { Definition, FootnoteDefinition, Root, RootContent } from 'mdast'
 import remarkDirective from 'remark-directive'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkGfm from 'remark-gfm'
@@ -9,6 +9,7 @@ import {
   defineComponent,
   h,
   provide,
+  ref,
   shallowRef,
   toValue,
   watch,
@@ -18,6 +19,7 @@ import type {
   Component,
   ComputedRef,
   MaybeRefOrGetter,
+  Ref,
   ShallowRef,
   VNode,
 } from 'vue'
@@ -50,7 +52,7 @@ export interface VueMarkToc {
 
 export interface UseVueMarkReturn {
   toc: ShallowRef<VueMarkToc[]>
-  hasFootnote: ComputedRef<boolean>
+  hasFootnote: Ref<boolean>
   VueMarkContent: Component
   FootnoteContent: Component
 }
@@ -88,28 +90,22 @@ export function useVueMark(
 
     return toc
   })
-  const definitions: ShallowRef<Record<string, Definition>> = shallowRef({})
-  const footnoteDefinitions: ShallowRef<FootnoteDefinitionMap> = shallowRef({})
-  const hasFootnote = computed(() => Object.keys(footnoteDefinitions.value).length > 0)
+  let definitions: Record<string, Definition> = {}
+  let footnoteDefinitions: FootnoteDefinitionMap = {}
+  const hasFootnote = ref(false)
 
   const setDefinition = (node: Definition) => {
-    definitions.value = {
-      ...definitions.value,
-      [node.identifier]: node,
-    }
+    definitions[node.identifier] = node
   }
 
   const setFootnoteDefinition = (
     node: FootnoteDefinition,
     render: () => VNode | string | null | (VNode | string | null)[],
   ) => {
-    footnoteDefinitions.value = {
-      ...footnoteDefinitions.value,
-      [node.identifier]: {
-        node,
-        index: Object.keys(footnoteDefinitions.value).length,
-        render,
-      },
+    footnoteDefinitions[node.identifier] = {
+      node,
+      index: Object.keys(footnoteDefinitions).length,
+      render,
     }
   }
 
@@ -118,24 +114,6 @@ export function useVueMark(
     index?: number,
     context?: any,
   ): VNode | string | null => {
-    // frontmatter
-    if (node.type === 'yaml') {
-      return null
-    }
-
-    // footnote definition
-    if (node.type === 'footnoteDefinition') {
-      setFootnoteDefinition(node, () =>
-        (node).children.map(getRootComponent))
-      return null
-    }
-
-    // link/image definition
-    if (node.type === 'definition') {
-      setDefinition(node)
-      return null
-    }
-
     if (node.type === 'text' && !dealWithTextNodes) {
       return node.value
     }
@@ -213,10 +191,20 @@ export function useVueMark(
         return h(element, { src: normalizeUri(node.url || ''), alt: node.alt ?? undefined, title: node.title ?? undefined })
       }
       case 'imageReference': {
-        return h(element, { identifier: node.identifier, alt: node.alt ?? undefined })
+        const def = definitions[node.identifier]
+        if (!def) {
+          console.error(new Error(`No definition found for identifier: ${node.identifier}`))
+          return null
+        }
+        return h(element, { src: normalizeUri(def.url || ''), title: def.title ?? undefined, alt: node.alt ?? undefined })
       }
       case 'linkReference': {
-        return h(element, { identifier: node.identifier }, () =>
+        const def = definitions[node.identifier]
+        if (!def) {
+          console.error(new Error(`No definition found for identifier: ${node.identifier}`))
+          return null
+        }
+        return h(element, { href: normalizeUri(def.url || ''), title: def.title ?? undefined }, () =>
           node.children.map(getRootComponent))
       }
       case 'heading': {
@@ -262,19 +250,38 @@ export function useVueMark(
     }
   }
 
-  const markVNodes = shallowRef(ast.value.children.map(getRootComponent))
+  const markVNodes = shallowRef(processMarkVNodes(ast.value))
+
+  function processMarkVNodes(root: Root) {
+    definitions = {}
+    footnoteDefinitions = {}
+    hasFootnote.value = false
+
+    const tempMarkVNodes: (VNode | string | null)[] = []
+
+    root.children.forEach((node, index) => {
+      if (node.type === 'definition') {
+        setDefinition(node)
+      } else if (node.type === 'footnoteDefinition') {
+        setFootnoteDefinition(node, () => {
+          hasFootnote.value = true
+          return node.children.map(getRootComponent)
+        })
+      } else {
+        tempMarkVNodes.push(getRootComponent(node, index))
+      }
+    })
+
+    return tempMarkVNodes
+  }
 
   watch(ast, (newValue) => {
-    definitions.value = {}
-    footnoteDefinitions.value = {}
-    markVNodes.value = newValue.children.map(getRootComponent)
+    markVNodes.value = processMarkVNodes(newValue)
   })
 
   const VueMarkContent: Component = defineComponent({
     name: 'VueMarkContent',
     setup() {
-      provide('definitions', definitions)
-      provide('footnoteDefinitions', footnoteDefinitions)
       provide('globalPrefix', globalPrefix)
       return () => h('div', markVNodes.value)
     },
@@ -292,11 +299,11 @@ export function useVueMark(
         }
 
         if (typeof element === 'string') {
-          return h(element, Object.values(footnoteDefinitions.value).map(item => item.render()))
+          return h(element, Object.values(footnoteDefinitions).map(item => item.render()))
         }
 
         return h(element, {
-          footnoteDefinitions: footnoteDefinitions.value,
+          footnoteDefinitions,
           globalPrefix,
         })
       }
