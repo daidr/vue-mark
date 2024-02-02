@@ -8,5 +8,5 @@ defineProps<{
 </script>
 
 <template>
-  <code>{{ item.value }}</code>
+  <code>{{ item.value.replace(/\r?\n|\r/g, ' ') }}</code>
 </template>

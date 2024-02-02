@@ -41,6 +41,9 @@ importers:
       '@types/mdast':
         specifier: ^4.0.3
         version: 4.0.3
+      micromark-util-sanitize-uri:
+        specifier: ^2.0.0
+        version: 2.0.0
       remark:
         specifier: ^15.0.1
         version: 15.0.1
@@ -56,6 +59,9 @@ importers:
       remark-parse:
         specifier: ^11.0.0
         version: 11.0.0
+      trim-lines:
+        specifier: ^3.0.1
+        version: 3.0.1
       unified:
         specifier: ^11.0.4
         version: 11.0.4
@@ -3886,6 +3892,10 @@ packages:
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dependencies:
       eslint-visitor-keys: 3.4.3
+    dev: true
+
+  /trim-lines@3.0.1:
+    resolution: {integrity: sha512-kRj8B+YHZCc9kQYdWfJB2/oUl9rA99qbowYYBtr4ui4mZyAQ2JpvVBd/6U2YloATfqBhBTSMhTpgBHtU0Mf3Rg==}
     dev: true
 
   /trough@2.1.0:

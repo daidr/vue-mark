@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Text } from 'mdast'
+import { trimLines } from 'trim-lines'
 
 defineProps<{
   item: Text
@@ -8,5 +9,5 @@ defineProps<{
 </script>
 
 <template>
-  {{ item.value }}
+  {{ trimLines(item.value) }}
 </template>

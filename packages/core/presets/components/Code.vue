@@ -8,7 +8,9 @@ defineProps<{
 </script>
 
 <template>
-  <pre :lang="item.lang || undefined" :meta="item.meta">
-    <code>{{ item.value }}</code>
-  </pre>
+  <pre><code
+      :class="{
+        [`language-${item.lang}`]: item.lang,
+      }" :meta="item.meta"
+  >{{ item.value ? `${item.value}\n` : '' }}</code></pre>
 </template>
