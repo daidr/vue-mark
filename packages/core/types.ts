@@ -2,7 +2,6 @@ import type {
   Blockquote,
   Break,
   Code,
-  Definition,
   Delete,
   Emphasis,
   FootnoteDefinition,
@@ -58,7 +57,6 @@ export interface LeafPartTypeMap {
   thematicBreak: ThematicBreak
   break: Break
   text: Text
-  definition: Definition
   footnoteReference: FootnoteReference
   imageReference: ImageReference
 }
@@ -72,32 +70,11 @@ export interface CustomDirective extends Parent {
 export type PartTypeMap = ParentPartTypeMap & LeafPartTypeMap
 
 export type PresetConfig = {
-  /**
-   * 普通part组件
-   * normal render components
-   */
-  [key in keyof PartTypeMap]?: Component<{
-    item: PartTypeMap[key]
-    index?: number
-  }>;
+  [key in keyof PartTypeMap]: Component | string | null;
 } & {
-  /**
-   * 脚注组件
-   * footnote render component
-   */
-  footnoteContainer?: Component<{
-    footnoteDefinitions: FootnoteDefinitionMap
-    globalPrefix: string
-  }>
+  footnoteContainer: Component | string | null
 } & {
-  /**
-   * 自定义块组件
-   * Custom directive components
-   */
-  [key in `directive_${string}`]?: Component<{
-    item: CustomDirective
-    index?: number
-  }>;
+  [key in `directive_${string}`]: Component | string | null;
 }
 
 /**

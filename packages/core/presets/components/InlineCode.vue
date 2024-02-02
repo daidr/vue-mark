@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import type { InlineCode } from 'mdast'
-
 defineProps<{
-  item: InlineCode
-  index?: number
+  code: string
 }>()
 </script>
 
 <template>
-  <code>{{ item.value.replace(/\r?\n|\r/g, ' ') }}</code>
+  <code>{{ code }}</code>
 </template>

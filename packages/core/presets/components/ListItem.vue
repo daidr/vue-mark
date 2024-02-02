@@ -1,23 +1,17 @@
 <script setup lang="ts">
-import type { ListItem } from 'mdast'
-
-type GfmListItem = ListItem & {
-  checked?: boolean
-}
-
 defineProps<{
-  item: GfmListItem
-  index?: number
+  spread: boolean
+  checked?: boolean
 }>()
 </script>
 
 <template>
   <li
     class="vuemark-list-item" :class="{
-      'vuemark-task-list-item': item.checked !== null,
+      'vuemark-task-list-item': typeof checked === 'boolean',
     }"
   >
-    <input v-if="item.checked !== null" type="checkbox" :checked="item.checked" disabled>
+    <input v-if="typeof checked === 'boolean'" type="checkbox" :checked="checked" disabled>
     <slot />
   </li>
 </template>

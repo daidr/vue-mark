@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import type { Heading } from 'mdast'
-import { getNodeTextContent } from '../../utils'
-
 defineProps<{
-  item: Heading
-  index?: number
+  depth: 1 | 2 | 3 | 4 | 5 | 6
+  slug: string
 }>()
 </script>
 
 <template>
-  <component :is="`h${item.depth}`" :id="getNodeTextContent(item)">
+  <component :is="`h${depth}`" :id="`user-content-${slug}`">
     <slot />
   </component>
 </template>

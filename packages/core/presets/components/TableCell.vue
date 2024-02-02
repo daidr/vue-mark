@@ -1,19 +1,12 @@
 <script setup lang="ts">
-import type { Table, TableCell } from 'mdast'
-import type { ComputedRef } from 'vue'
-import { inject } from 'vue'
-
 defineProps<{
-  item: TableCell
-  index?: number
+  align?: 'center' | 'left' | 'right'
+  isHead?: boolean
 }>()
-
-const tableData = inject<ComputedRef<Table>>('tableData')!
-const tableRowIndex = inject<ComputedRef<number>>('tableRowIndex')!
 </script>
 
 <template>
-  <component :is="tableRowIndex === 0 ? 'th' : 'td'" :align="tableData?.align?.[index ?? -1]">
+  <component :is="isHead ? 'th' : 'td'" :align="align">
     <slot />
   </component>
 </template>

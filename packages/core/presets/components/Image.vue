@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import type { Image } from 'mdast'
-import { normalizeUri } from 'micromark-util-sanitize-uri'
-
 defineProps<{
-  item: Image
-  index?: number
+  src: string
+  alt?: string
+  title?: string
 }>()
 </script>
 
 <template>
-  <img :src="normalizeUri(item.url || '')" :alt="item.alt || undefined" :title="item.title || undefined" class="vuemark-image">
+  <img :src="src" :alt="alt" :title="title" class="vuemark-image">
 </template>

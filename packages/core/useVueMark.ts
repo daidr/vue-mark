@@ -21,10 +21,10 @@ import type {
   ShallowRef,
   VNode,
 } from 'vue'
+import { trimLines } from 'trim-lines'
+import { normalizeUri } from 'micromark-util-sanitize-uri'
 import type {
   FootnoteDefinitionMap,
-  LeafPartTypes,
-  ParentPartTypes,
   PresetConfig,
 } from './types'
 import { PRESETS } from './presets'
@@ -38,8 +38,9 @@ const processor = unified()
   .freeze()
 
 export interface UseVueMarkOptions {
-  customPresets?: PresetConfig
+  customPresets?: Partial<PresetConfig>
   globalPrefix?: string
+  dealWithTextNodes?: boolean
 }
 
 export interface VueMarkToc {
@@ -49,6 +50,7 @@ export interface VueMarkToc {
 
 export interface UseVueMarkReturn {
   toc: ShallowRef<VueMarkToc[]>
+  hasFootnote: ComputedRef<boolean>
   VueMarkContent: Component
   FootnoteContent: Component
 }
@@ -57,7 +59,7 @@ export function useVueMark(
   value: MaybeRefOrGetter<string>,
   options?: UseVueMarkOptions,
 ): UseVueMarkReturn {
-  const { customPresets = {} as PresetConfig, globalPrefix = 'vuemark' }
+  const { customPresets = {} as PresetConfig, globalPrefix = 'vuemark', dealWithTextNodes = true }
     = options ?? {}
   const computedValue = computed(() => toValue(value))
   const ast = computed(() => processor.parse(computedValue.value))
@@ -88,6 +90,7 @@ export function useVueMark(
   })
   const definitions: ShallowRef<Record<string, Definition>> = shallowRef({})
   const footnoteDefinitions: ShallowRef<FootnoteDefinitionMap> = shallowRef({})
+  const hasFootnote = computed(() => Object.keys(footnoteDefinitions.value).length > 0)
 
   const setDefinition = (node: Definition) => {
     definitions.value = {
@@ -113,73 +116,150 @@ export function useVueMark(
   const getRootComponent = (
     node: RootContent,
     index?: number,
+    context?: any,
   ): VNode | string | null => {
-    if (isParent(node)) {
-      const partName: ParentPartTypes = isCustomBlock(node)
-        ? `directive_${node.name}`
-        : (node.type as ParentPartTypes)
-
-      if (partName === 'footnoteDefinition') {
-        // 脚注定义part
-        setFootnoteDefinition(node as FootnoteDefinition, () =>
-          node.children.map(getRootComponent))
-        return null
-      }
-
-      const element
-        = (customPresets[partName] as Component)
-        || (PRESETS[partName] as Component)
-
-      if (element) {
-        if (partName === 'table') {
-          return (h(
-            element,
-            { item: node, index },
-            {
-              head: () => getRootComponent(node.children[0], 0),
-              body: () =>
-                node.children.slice(1).map((child, i) =>
-                  getRootComponent(child, i + 1),
-                ),
-            },
-          ))
-        }
-
-        return h(element, { item: node, index }, () =>
-          node.children.map(getRootComponent))
-      }
-
-      // 未知parent part
-      return h(
-        'div',
-        { class: ['unknown-parent-part', partName], index },
-        node.children.map(getRootComponent),
-      )
-    }
-
-    // if (isText(node)) {
-    //     return node.value
-    // }
-
-    // 叶子元素
-    const partName: LeafPartTypes = `${node.type}` as LeafPartTypes
-
-    if (partName === 'definition') {
-      // 链接定义
-      setDefinition(node as Definition)
+    // frontmatter
+    if (node.type === 'yaml') {
       return null
     }
 
-    const element
-      = (customPresets[partName] as Component)
-      || (PRESETS[partName] as Component)
-
-    if (element) {
-      return h(element, { item: node, index })
+    // footnote definition
+    if (node.type === 'footnoteDefinition') {
+      setFootnoteDefinition(node, () =>
+        (node).children.map(getRootComponent))
+      return null
     }
 
-    // 未知叶子part
-    return h('span', { class: ['unknown-leaf-part', node.type], index })
+    // link/image definition
+    if (node.type === 'definition') {
+      setDefinition(node)
+      return null
+    }
+
+    if (node.type === 'text' && !dealWithTextNodes) {
+      return node.value
+    }
+
+    let element: string | Component | null
+
+    if (isCustomBlock(node)) {
+      element = customPresets[`directive_${node.name}`]
+      || PRESETS[`directive_${node.name}`]
+
+      if (element === undefined) {
+        console.error(new Error(`No component found for directive name: ${node.name}`))
+        return null
+      }
+    } else {
+      element = customPresets[<keyof PresetConfig>node.type]
+      || PRESETS[<keyof PresetConfig>node.type]
+
+      if (element === undefined) {
+        console.error(new Error(`No component found for node type: ${node.type}`))
+        return null
+      }
+    }
+
+    if (element === null) {
+      return null
+    }
+
+    if (typeof element === 'string') {
+      if (isParent(node)) {
+        return h(
+          element,
+          node.children.map(getRootComponent),
+        )
+      }
+      return h(element)
+    }
+
+    switch (node.type) {
+      case 'paragraph':
+      case 'delete':
+      case 'blockquote':
+      case 'strong':
+      case 'emphasis': {
+        return h(element, () => node.children.map(getRootComponent))
+      }
+      case 'break':
+      case 'thematicBreak': {
+        return h(element)
+      }
+      case 'text': {
+        return h(element, { content: trimLines(node.value) })
+      }
+      case 'inlineCode': {
+        return h(element, { code: node.value.replace(/\r?\n|\r/g, ' ') })
+      }
+      case 'code': {
+        return h(element, { code: node.value ? `${node.value}\n` : '', lang: node.lang ?? undefined, meta: node.meta ?? undefined })
+      }
+      case 'link': {
+        return h(element, { href: normalizeUri(node.url || ''), title: node.title ?? undefined }, () =>
+          node.children.map(getRootComponent))
+      }
+      case 'list': {
+        return h(element, { ordered: node.ordered ?? undefined, start: node.start ?? undefined, spread: node.spread ?? undefined }, () =>
+          node.children.map(getRootComponent))
+      }
+      case 'listItem': {
+        return h(element, {
+          checked: node.checked ?? undefined,
+          spread: node.spread ?? undefined,
+        }, () => node.children.map(getRootComponent))
+      }
+      case 'image': {
+        return h(element, { src: normalizeUri(node.url || ''), alt: node.alt ?? undefined, title: node.title ?? undefined })
+      }
+      case 'imageReference': {
+        return h(element, { identifier: node.identifier, alt: node.alt ?? undefined })
+      }
+      case 'linkReference': {
+        return h(element, { identifier: node.identifier }, () =>
+          node.children.map(getRootComponent))
+      }
+      case 'heading': {
+        // TODO: 使用另外的 slug 函数
+        return h(element, { depth: node.depth, slug: getNodeTextContent(node) }, () =>
+          node.children.map(getRootComponent))
+      }
+      case 'table': {
+        return h(
+          element,
+          null,
+          {
+            head: () => getRootComponent(node.children[0], 0, { aligns: node.align ?? [], isHead: true }),
+            body: () =>
+              node.children.slice(1).map((child, i) =>
+                getRootComponent(child, i + 1, { aligns: node.align ?? [], isHead: false }),
+              ),
+          },
+        )
+      }
+      case 'tableRow': {
+        if (!context) return null
+        const { aligns, isHead } = context
+
+        return h(
+          element,
+          () => node.children.map((child, i) => getRootComponent(child, i, { align: aligns[i], isHead })),
+        )
+      }
+      case 'tableCell': {
+        if (!context) return null
+        const { align, isHead } = context
+
+        return h(element, { align, isHead }, () => node.children.map(getRootComponent))
+      }
+      default: {
+        if (isParent(node)) {
+          return h(element, { item: node, index }, () =>
+            node.children.map(getRootComponent))
+        }
+        return h(element, { item: node, index })
+      }
+    }
   }
 
   const markVNodes = shallowRef(ast.value.children.map(getRootComponent))
@@ -204,8 +284,17 @@ export function useVueMark(
     name: 'FootnoteContent',
     setup() {
       return () => {
-        const element: Component
-          = customPresets.footnoteContainer ?? PRESETS.footnoteContainer!
+        const element
+          = customPresets.footnoteContainer ?? PRESETS.footnoteContainer
+
+        if (element === null) {
+          return null
+        }
+
+        if (typeof element === 'string') {
+          return h(element, Object.values(footnoteDefinitions.value).map(item => item.render()))
+        }
+
         return h(element, {
           footnoteDefinitions: footnoteDefinitions.value,
           globalPrefix,
@@ -216,6 +305,7 @@ export function useVueMark(
 
   return {
     toc,
+    hasFootnote,
     VueMarkContent,
     FootnoteContent,
   }

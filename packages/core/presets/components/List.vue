@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import type { List } from 'mdast'
-
 defineProps<{
-  item: List
-  index?: number
+  ordered?: boolean
+  spread?: boolean
+  start?: number
 }>()
 </script>
 
 <template>
-  <ol v-if="item.ordered" :start="item.start || undefined">
+  <ol v-if="ordered" :start="start || undefined">
     <slot />
   </ol>
   <ul v-else>

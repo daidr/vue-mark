@@ -6,7 +6,7 @@ export function isParent(node: Node): node is Parent {
 
 export type ParentWithName = Parent & { name: string }
 
-export function isCustomBlock(node: Parent): node is ParentWithName {
+export function isCustomBlock(node: Node): node is ParentWithName {
   return (
     node.type === 'containerDirective'
     || node.type === 'leafDirective'
