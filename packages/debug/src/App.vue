@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useVueMark } from '@vuemark/core'
-import { defineAsyncComponent, ref } from 'vue'
+import { defineAsyncComponent, ref, watch } from 'vue'
 
 const pressure = true
 
@@ -862,12 +862,23 @@ _________________
 [img]: https://mdg.imgix.net/assets/images/san-juan-mountains.jpg?auto=format&fit=clip&q=40&w=200 "这是图片的title"
 `)
 
+const deferredMd = ref(md.value)
+
+let raf: number
+
+watch(md, () => {
+  cancelAnimationFrame(raf)
+  raf = setTimeout(() => {
+    deferredMd.value = md.value
+  }, 10)
+})
+
 const customPresets
   = {
     directive_gallery: defineAsyncComponent(() => import('./components/Gallery.vue')),
   }
 
-const { VueMarkContent, FootnoteContent, hasFootnote } = useVueMark(md, {
+const { VueMarkContent, FootnoteContent, hasFootnote } = useVueMark(deferredMd, {
   customPresets,
   dealWithTextNodes: false,
 })

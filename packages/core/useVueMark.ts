@@ -1,4 +1,4 @@
-import type { Definition, FootnoteDefinition, Root, RootContent } from 'mdast'
+import type { Definition, FootnoteDefinition, List, Root, RootContent } from 'mdast'
 import remarkDirective from 'remark-directive'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkGfm from 'remark-gfm'
@@ -30,7 +30,7 @@ import type {
   PresetConfig,
 } from './types'
 import { PRESETS } from './presets'
-import { getNodeTextContent, isCustomBlock, isParent } from './utils'
+import { getNodeTextContent, isCustomBlock, isParent, listItemLoose, listLoose } from './utils'
 
 const processor = unified()
   .use(remarkParse)
@@ -178,14 +178,25 @@ export function useVueMark(
           node.children.map(getRootComponent))
       }
       case 'list': {
-        return h(element, { ordered: node.ordered ?? undefined, start: node.start ?? undefined, spread: node.spread ?? undefined }, () =>
-          node.children.map(getRootComponent))
+        const hasTaskItem = node.children.some(child => child.type === 'listItem' && typeof child.checked === 'boolean')
+        return h(element, { ordered: node.ordered ?? undefined, start: node.start ?? undefined, spread: node.spread ?? undefined, hasTaskItem }, () =>
+          node.children.map((child, i) => getRootComponent(child, i, node)))
       }
       case 'listItem': {
+        const parent = context as List
+        const loose = parent ? listLoose(parent) : listItemLoose(node)
+        const children: RootContent[] = []
+        node.children.forEach((child) => {
+          if (child.type === 'paragraph' && !loose) {
+            children.push(...child.children)
+          } else {
+            children.push(child)
+          }
+        })
         return h(element, {
           checked: node.checked ?? undefined,
           spread: node.spread ?? undefined,
-        }, () => node.children.map(getRootComponent))
+        }, () => children.map(getRootComponent))
       }
       case 'image': {
         return h(element, { src: normalizeUri(node.url || ''), alt: node.alt ?? undefined, title: node.title ?? undefined })

@@ -3,14 +3,16 @@ defineProps<{
   ordered?: boolean
   spread?: boolean
   start?: number
+  hasTaskItem: boolean
 }>()
 </script>
 
 <template>
-  <ol v-if="ordered" :start="start || undefined">
+  <component
+    :is="ordered ? 'ol' : 'ul'" :start="start || undefined" class="vuemark-list" :class="{
+      'contains-task-list': hasTaskItem,
+    }"
+  >
     <slot />
-  </ol>
-  <ul v-else>
-    <slot />
-  </ul>
+  </component>
 </template>
