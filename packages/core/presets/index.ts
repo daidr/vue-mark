@@ -1,41 +1,27 @@
+import { defineAsyncComponent } from 'vue'
 import type { PresetConfig } from '../types'
-import Text from './components/Text.vue'
-import Heading from './components/Heading.vue'
-import Link from './components/Link.vue'
-import LinkReference from './components/LinkReference.vue'
-import List from './components/List.vue'
-import ListItem from './components/ListItem.vue'
-import Code from './components/Code.vue'
-import InlineCode from './components/InlineCode.vue'
-import Image from './components/Image.vue'
-import FootnoteReference from './components/FootnoteReference.vue'
-import FootnoteContainer from './components/FootnoteContainer.vue'
-import Table from './components/Table.vue'
-import TableRow from './components/TableRow.vue'
-import TableCell from './components/TableCell.vue'
-import ImageReference from './components/ImageReference.vue'
 
 export const PRESETS: PresetConfig = {
-  text: Text,
+  text: defineAsyncComponent(() => import('./components/Text.vue')),
   paragraph: 'p',
-  heading: Heading,
+  heading: defineAsyncComponent(() => import('./components/Heading.vue')),
   delete: 'del',
   blockquote: 'blockquote',
   strong: 'strong',
   emphasis: 'em',
-  link: Link,
-  linkReference: LinkReference,
+  link: defineAsyncComponent(() => import('./components/Link.vue')),
+  linkReference: defineAsyncComponent(() => import('./components/LinkReference.vue')),
   thematicBreak: 'hr',
-  list: List,
-  listItem: ListItem,
-  code: Code,
-  inlineCode: InlineCode,
-  image: Image,
-  imageReference: ImageReference,
+  list: defineAsyncComponent(() => import('./components/List.vue')),
+  listItem: defineAsyncComponent(() => import('./components/ListItem.vue')),
+  code: defineAsyncComponent(() => import('./components/Code.vue')),
+  inlineCode: defineAsyncComponent(() => import('./components/InlineCode.vue')),
+  image: defineAsyncComponent(() => import('./components/Image.vue')),
+  imageReference: defineAsyncComponent(() => import('./components/ImageReference.vue')),
   break: 'br',
-  footnoteReference: FootnoteReference,
-  footnoteContainer: FootnoteContainer,
-  table: Table,
-  tableRow: TableRow,
-  tableCell: TableCell,
+  footnoteReference: defineAsyncComponent(() => import('./components/FootnoteReference.vue')),
+  footnoteContainer: defineAsyncComponent(() => import('./components/FootnoteContainer.vue')),
+  table: defineAsyncComponent(() => import('./components/Table.vue')),
+  tableRow: defineAsyncComponent(() => import('./components/TableRow.vue')),
+  tableCell: defineAsyncComponent(() => import('./components/TableCell.vue')),
 }
