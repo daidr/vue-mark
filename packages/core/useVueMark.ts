@@ -9,7 +9,6 @@ import {
   defineComponent,
   h,
   provide,
-  ref,
   shallowRef,
   toValue,
   watch,
@@ -19,7 +18,6 @@ import type {
   Component,
   ComputedRef,
   MaybeRefOrGetter,
-  Ref,
   ShallowRef,
   VNode,
 } from 'vue'
@@ -52,7 +50,8 @@ export interface VueMarkToc {
 
 export interface UseVueMarkReturn {
   toc: ShallowRef<VueMarkToc[]>
-  hasFootnote: Ref<boolean>
+  hasFootnote: ShallowRef<boolean>
+  frontmatter: ShallowRef<string>
   VueMarkContent: Component
   FootnoteContent: Component
 }
@@ -71,6 +70,7 @@ export function useVueMark(
     console.log(ast.value)
   })
 
+  const frontmatter = shallowRef('')
   const toc: ComputedRef<VueMarkToc[]> = computed(() => {
     const toc: VueMarkToc[] = []
 
@@ -92,7 +92,7 @@ export function useVueMark(
   })
   let definitions: Record<string, Definition> = {}
   let footnoteDefinitions: FootnoteDefinitionMap = {}
-  const hasFootnote = ref(false)
+  const hasFootnote = shallowRef(false)
 
   const setDefinition = (node: Definition) => {
     definitions[node.identifier] = node
@@ -267,12 +267,14 @@ export function useVueMark(
     definitions = {}
     footnoteDefinitions = {}
     hasFootnote.value = false
+    frontmatter.value = ''
 
     const tempMarkVNodes: (VNode | string | null)[] = []
     const deferred: [RootContent, number][] = []
 
     root.children.forEach((node, index) => {
       if (node.type === 'yaml') {
+        frontmatter.value = node.value
         return
       }
 
