@@ -6,13 +6,13 @@
 
 ```bash
 # use npm
-npm install @vue-mark/core
+npm install @vuemark/core
 
 # use yarn
-yarn add @vue-mark/core
+yarn add @vuemark/core
 
 # use pnpm
-pnpm add @vue-mark/core
+pnpm add @vuemark/core
 ```
 
 ## 开箱即用
