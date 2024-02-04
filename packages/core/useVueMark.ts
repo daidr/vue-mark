@@ -12,7 +12,6 @@ import {
   shallowRef,
   toValue,
   watch,
-  watchEffect,
 } from 'vue'
 import type {
   Component,
@@ -64,11 +63,6 @@ export function useVueMark(
     = options ?? {}
   const computedValue = computed(() => toValue(value))
   const ast = computed(() => processor.parse(computedValue.value))
-
-  watchEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log(ast.value)
-  })
 
   const frontmatter = shallowRef('')
   const toc: ComputedRef<VueMarkToc[]> = computed(() => {
