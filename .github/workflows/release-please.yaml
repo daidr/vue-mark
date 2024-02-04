@@ -59,8 +59,12 @@ jobs:
         run: pnpm build
         if: ${{ steps.release.outputs.release_created }}
 
+      - name: Copy .npmrc
+        run: cp .npmrc dist/.npmrc
+        if: ${{ steps.release.outputs.release_created }}
+
       - name: Publish to GitHub Packages
-        run: cd dist && npm publish
+        run: cd dist && npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         if: ${{ steps.release.outputs.release_created }}
