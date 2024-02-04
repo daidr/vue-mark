@@ -45,9 +45,6 @@ jobs:
       - name: Build package
         run: pnpm build
 
-      - name: Copy .npmrc
-        run: cp .npmrc dist/.npmrc
-
       - name: Publish to GitHub Packages
         run: cd dist && npm publish --access public
         env:

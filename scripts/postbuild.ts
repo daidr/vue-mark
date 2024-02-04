@@ -43,6 +43,11 @@ async function run() {
   console.log('Writing package.json')
   fs.writeFileSync('dist/package.json', JSON.stringify(finalPackageJson, null, 2))
 
+  console.log('Creating .npmrc')
+  fs.writeFileSync('dist/.npmrc', `//registry.npmjs.org/:_authToken=\${NODE_AUTH_TOKEN}
+registry=https://registry.npmjs.org/
+always-auth=true`)
+
   console.log('Postbuild script completed')
 }
 
