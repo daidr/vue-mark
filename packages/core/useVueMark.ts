@@ -278,8 +278,8 @@ export function useVueMark(
       }
 
       if (node.type === 'footnoteDefinition') {
+        hasFootnote.value = true
         setFootnoteDefinition(node, () => {
-          hasFootnote.value = true
           return node.children.map(getRootComponent)
         })
         return
