@@ -261,12 +261,9 @@ export function useVueMark(
     }
   }
 
-  let st = 0
-
   const markVNodes = shallowRef(processMarkVNodes(ast.value))
 
   function processMarkVNodes(root: Root) {
-    st = Date.now()
     definitions = {}
     footnoteDefinitions = {}
     hasFootnote.value = false
@@ -298,9 +295,6 @@ export function useVueMark(
     deferred.forEach(([node, index]) => {
       tempMarkVNodes.push(getRootComponent(node, index))
     })
-
-    // eslint-disable-next-line no-console
-    console.log('processMarkVNodes', Date.now() - st, 'ms')
 
     return tempMarkVNodes
   }
