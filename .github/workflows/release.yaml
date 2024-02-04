@@ -18,6 +18,7 @@ jobs:
         with:
           node-version: 20
           scope: '@vuemark'
+          registry-url: 'https://registry.npmjs.org'
 
       - uses: pnpm/action-setup@v2
         name: Install pnpm
@@ -43,9 +44,6 @@ jobs:
 
       - name: Build package
         run: pnpm build
-
-      - name: Copy .npmrc
-        run: cp .npmrc dist/.npmrc
 
       - name: Publish to GitHub Packages
         run: cd dist && npm publish

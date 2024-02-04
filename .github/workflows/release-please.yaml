@@ -26,6 +26,7 @@ jobs:
         with:
           node-version: 20
           scope: '@vuemark'
+          registry-url: 'https://registry.npmjs.org'
         if: ${{ steps.release.outputs.release_created }}
 
       - uses: pnpm/action-setup@v2
@@ -56,10 +57,6 @@ jobs:
 
       - name: Build package
         run: pnpm build
-        if: ${{ steps.release.outputs.release_created }}
-
-      - name: Copy .npmrc
-        run: cp .npmrc dist/.npmrc
         if: ${{ steps.release.outputs.release_created }}
 
       - name: Publish to GitHub Packages
