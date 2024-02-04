@@ -339,6 +339,7 @@ export function useVueMark(
   return {
     toc,
     hasFootnote,
+    frontmatter,
     VueMarkContent,
     FootnoteContent,
   }
