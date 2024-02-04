@@ -1,6 +1,7 @@
 {
   "name": "vuemark",
-  "version": "1.0.0",
+  "version": "0.0.0",
+  "private": true,
   "description": "A customizable markdown rendering library for Vue.js",
   "scripts": {
     "docs:dev": "pnpm run -C docs dev",
