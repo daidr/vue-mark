@@ -212,6 +212,14 @@ export function useVueMark(
         return h(element, { href: normalizeUri(def.url || ''), title: def.title ?? undefined }, () =>
           node.children.map(getRootComponent))
       }
+      case 'footnoteReference': {
+        const def = footnoteDefinitions[node.identifier]
+        if (!def) {
+          console.error(new Error(`No footnote definition found for identifier: ${node.identifier}`))
+          return null
+        }
+        return h(element, { index: def.index })
+      }
       case 'heading': {
         // TODO: 使用另外的 slug 函数
         return h(element, { depth: node.depth, slug: getNodeTextContent(node) }, () =>
