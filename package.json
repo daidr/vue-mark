@@ -8,7 +8,8 @@
     "docs:build": "pnpm run -C docs build",
     "docs:preview": "pnpm run -C docs preview",
     "dev": "pnpm run -C packages/debug dev --host",
-    "build": "pnpm run -C packages/debug build && esno scripts/postbuild.ts"
+    "build": "pnpm run -C packages/debug build && esno scripts/postbuild.ts",
+    "auto-publish": "cd dist && npm publish"
   },
   "keywords": [
     "frontend",
