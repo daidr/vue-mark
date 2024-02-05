@@ -10,22 +10,4 @@ export default defineConfig({
     sourcemap: true,
     filename: '../../stats.html',
   })],
-  build: {
-    emptyOutDir: true,
-    sourcemap: true,
-    outDir: '../../dist',
-    lib: {
-      entry: '../core/index.ts',
-      name: 'VueMark',
-      fileName: 'vuemark',
-    },
-    rollupOptions: {
-      external: ['vue'],
-      output: {
-        globals: {
-          vue: 'Vue',
-        },
-      },
-    },
-  },
 })
