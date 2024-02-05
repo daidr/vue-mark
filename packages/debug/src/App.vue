@@ -9,6 +9,12 @@ config: hello-world
 
 # 测试文档
 
+# 测试文档
+
+# 测试文档
+
+> # 测试文档
+
 ## 表格测试
 
 | Syntax      | Description | Test Text     | hello |
@@ -145,6 +151,7 @@ const customPresets
 const { VueMarkContent, FootnoteContent, hasFootnote } = useVueMark(deferredMd, {
   customPresets,
   dealWithTextNodes: false,
+  debug: true,
 })
 
 const textareaRef = ref<HTMLTextAreaElement | null>(null)

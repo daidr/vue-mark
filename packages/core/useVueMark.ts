@@ -45,8 +45,17 @@ export interface UseVueMarkOptions {
 }
 
 export interface VueMarkToc {
-  level: number
+  /**
+   * Heading level
+   */
+  level: 1 | 2 | 3 | 4 | 5 | 6
+  /**
+   * Heading title
+   */
   title: string
+  /**
+   * Heading slug
+   */
   slug: string
 }
 
@@ -101,7 +110,6 @@ export function useVueMark(
   const toc: ShallowRef<VueMarkToc[]> = shallowRef([])
   const hasFootnote = shallowRef(false)
 
-  const innerToc: VueMarkToc[] = []
   const tocSlugCountMap: Map<string, number> = new Map()
   const definitions: Map<string, Definition> = new Map()
   const footnoteDefinitions: ShallowRef<FootnoteDefinitionMap> = shallowRef(new Map())
@@ -125,6 +133,7 @@ export function useVueMark(
   const getRootComponent = (
     node: RootContent,
     index?: number,
+    inFootnote = false,
     context?: any,
   ): VNode | string | null => {
     if (node.type === 'text' && !dealWithTextNodes) {
@@ -156,10 +165,22 @@ export function useVueMark(
     }
 
     if (typeof element === 'string') {
+      if (node.type === 'heading') {
+        const children = node.children.map((child, i) => getRootComponent(child, i, inFootnote))
+        const title = getNodeTextContent(node)
+        let slug = slugify ? slugify(title) : title
+        const count = tocSlugCountMap.get(slug) ?? 0
+        tocSlugCountMap.set(slug, count + 1)
+        if (count > 0) {
+          slug += `-${count}`
+        }
+        toc.value.push({ level: node.depth, title, slug })
+        return h(element, children)
+      }
       if (isParent(node)) {
         return h(
           element,
-          node.children.map(getRootComponent),
+          node.children.map((child, i) => getRootComponent(child, i, inFootnote)),
         )
       }
       return h(element)
@@ -171,7 +192,7 @@ export function useVueMark(
       case 'blockquote':
       case 'strong':
       case 'emphasis': {
-        const children = node.children.map(getRootComponent)
+        const children = node.children.map((child, i) => getRootComponent(child, i, inFootnote))
         return h(element, () => children)
       }
       case 'break':
@@ -188,12 +209,12 @@ export function useVueMark(
         return h(element, { code: node.value ? `${node.value}\n` : '', lang: node.lang ?? undefined, meta: node.meta ?? undefined })
       }
       case 'link': {
-        const children = node.children.map(getRootComponent)
+        const children = node.children.map((child, i) => getRootComponent(child, i, inFootnote))
         return h(element, { href: normalizeUri(node.url || ''), title: node.title ?? undefined }, () => children)
       }
       case 'list': {
         const hasTaskItem = node.children.some(child => child.type === 'listItem' && typeof child.checked === 'boolean')
-        const children = node.children.map((child, i) => getRootComponent(child, i, node))
+        const children = node.children.map((child, i) => getRootComponent(child, i, inFootnote, node))
         return h(element, { ordered: node.ordered ?? undefined, start: node.start ?? undefined, spread: node.spread ?? undefined, hasTaskItem }, () =>
           children)
       }
@@ -209,7 +230,7 @@ export function useVueMark(
           }
         })
 
-        const children = childNodes.map(getRootComponent)
+        const children = childNodes.map((child, i) => getRootComponent(child, i, inFootnote))
 
         return h(element, {
           checked: node.checked ?? undefined,
@@ -233,25 +254,29 @@ export function useVueMark(
           console.error(new Error(`No definition found for identifier: ${node.identifier}`))
           return null
         }
-        const children = node.children.map(getRootComponent)
+        const children = node.children.map((child, i) => getRootComponent(child, i, inFootnote))
         return h(element, { href: normalizeUri(def.url || ''), title: def.title ?? undefined }, () => children)
       }
       case 'heading': {
-        const children = node.children.map(getRootComponent)
+        const children = node.children.map((child, i) => getRootComponent(child, i, inFootnote))
         const title = getNodeTextContent(node)
+        if (inFootnote) {
+          // 脚注内部的标题不提供 slug，不包含在 toc 中
+          return h(element, { level: node.depth }, () => children)
+        }
         let slug = slugify ? slugify(title) : title
         const count = tocSlugCountMap.get(slug) ?? 0
         tocSlugCountMap.set(slug, count + 1)
         if (count > 0) {
           slug += `-${count}`
         }
-        innerToc.push({ level: node.depth, title, slug })
+        toc.value.push({ level: node.depth, title, slug })
         return h(element, { level: node.depth, slug }, () => children)
       }
       case 'table': {
-        const head = getRootComponent(node.children[0], 0, { aligns: node.align ?? [], isHead: true })
+        const head = getRootComponent(node.children[0], 0, inFootnote, { aligns: node.align ?? [], isHead: true })
         const body = node.children.slice(1).map((child, i) =>
-          getRootComponent(child, i + 1, { aligns: node.align ?? [], isHead: false }),
+          getRootComponent(child, i + 1, inFootnote, { aligns: node.align ?? [], isHead: false }),
         )
         return h(
           element,
@@ -266,7 +291,7 @@ export function useVueMark(
         if (!context) return null
         const { aligns, isHead } = context
 
-        const children = node.children.map((child, i) => getRootComponent(child, i, { align: aligns[i], isHead }))
+        const children = node.children.map((child, i) => getRootComponent(child, i, inFootnote, { align: aligns[i], isHead }))
 
         return h(
           element,
@@ -277,7 +302,7 @@ export function useVueMark(
         if (!context) return null
         const { align, isHead } = context
 
-        const children = node.children.map(getRootComponent)
+        const children = node.children.map((child, i) => getRootComponent(child, i, inFootnote))
 
         return h(element, { align, isHead }, () => children)
       }
@@ -291,7 +316,7 @@ export function useVueMark(
       }
       default: {
         if (isParent(node)) {
-          const children = node.children.map(getRootComponent)
+          const children = node.children.map((child, i) => getRootComponent(child, i, inFootnote))
           return h(element, { item: node, index }, () => children)
         }
         return h(element, { item: node, index })
@@ -305,6 +330,10 @@ export function useVueMark(
     debugPrintLn('Start processing with root:', root)
     startTimeRecord('processMarkVNodes')
 
+    toc.value.length = 0
+    definitions.clear()
+    tocSlugCountMap.clear()
+    footnoteDefinitionCount = 0
     hasFootnote.value = false
     frontmatter.value = ''
     footnoteDefinitions.value.clear()
@@ -327,9 +356,7 @@ export function useVueMark(
       if (node.type === 'footnoteDefinition') {
         hasFootnote.value = true
 
-        const children = node.children.map(getRootComponent)
-
-        setFootnoteDefinition(node, () => children)
+        setFootnoteDefinition(node, () => node.children.map((child, i) => getRootComponent(child, i, true)))
         return
       }
 
@@ -339,16 +366,11 @@ export function useVueMark(
 
     startTimeRecord('processMarkVNodes:prepareVNodes')
     deferred.forEach(([node, index]) => {
-      tempMarkVNodes.push(getRootComponent(node, index))
+      tempMarkVNodes.push(getRootComponent(node, index, false))
     })
     endTimeRecord('processMarkVNodes:prepareVNodes')
 
-    toc.value = [...innerToc]
-
-    innerToc.length = 0
-    definitions.clear()
-    tocSlugCountMap.clear()
-    footnoteDefinitionCount = 0
+    triggerRef(toc)
     triggerRef(footnoteDefinitions)
 
     debugPrintLn('toc:', toc.value, '\nhasFootnote:', hasFootnote.value, '\nfrontmatter:', frontmatter.value)
@@ -372,6 +394,7 @@ export function useVueMark(
   const FootnoteContent: Component = defineComponent({
     name: 'FootnoteContent',
     setup() {
+      provide('globalPrefix', globalPrefix)
       return () => {
         const element
           = customPresets.footnoteContainer ?? PRESETS.footnoteContainer

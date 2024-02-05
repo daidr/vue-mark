@@ -3,14 +3,14 @@ import { inject } from 'vue'
 
 defineProps<{
   level: 1 | 2 | 3 | 4 | 5 | 6
-  slug: string
+  slug?: string
 }>()
 
 const globalPrefix = inject<string>('globalPrefix')!
 </script>
 
 <template>
-  <component :is="`h${level}`" :id="`user-content-${globalPrefix}-${slug}`">
+  <component :is="`h${level}`" :id="slug && `user-content-${globalPrefix}-${slug}`">
     <slot />
   </component>
 </template>
