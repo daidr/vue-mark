@@ -76,7 +76,3 @@ export type PresetConfig = {
 } & {
   [key in `directive_${string}`]: Component | string | null;
 }
-
-export type DirectiveHandlerConfig = {
-  [key in `directive_${string}`]: (node: CustomDirective) => VNode | string | null
-}

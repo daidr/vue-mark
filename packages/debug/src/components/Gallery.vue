@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import type { CustomDirective } from '@vuemark/core'
 import type { Image, Node, Parent } from 'mdast'
+import { isParent } from '@vuemark/core'
 import { computed } from 'vue'
 
 const props = defineProps<{
   item: CustomDirective
   index?: number
 }>()
-
-function isParent(node: Node | Parent): node is Parent {
-  return 'children' in node
-}
 
 function getAllImageNodes(node: Node | Parent): Image[] {
   const images: Image[] = []

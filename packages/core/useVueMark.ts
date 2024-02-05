@@ -1,4 +1,4 @@
-import type { Definition, FootnoteDefinition, List, Root, RootContent } from 'mdast'
+import type { Definition, FootnoteDefinition, List, Root, RootContent, Text } from 'mdast'
 import remarkDirective from 'remark-directive'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkGfm from 'remark-gfm'
@@ -23,6 +23,7 @@ import type {
 import { trimLines } from 'trim-lines'
 import { normalizeUri } from 'micromark-util-sanitize-uri'
 import type {
+  CustomDirective,
   FootnoteDefinitionMap,
   PresetConfig,
 } from './types'
@@ -72,7 +73,7 @@ export function useVueMark(
   options?: UseVueMarkOptions,
 ): UseVueMarkReturn {
   const {
-    customPresets = {} as PresetConfig,
+    customPresets = {},
     globalPrefix = 'vuemark',
     dealWithTextNodes = true,
     debug = false,
@@ -131,11 +132,17 @@ export function useVueMark(
   }
 
   const getRootComponent = (
-    node: RootContent,
+    node: RootContent | CustomDirective,
     index?: number,
     inFootnote = false,
     context?: any,
   ): VNode | string | null => {
+    if (node.type === 'html') {
+      node = {
+        ...node,
+        type: 'text',
+      } as Text
+    }
     if (node.type === 'text' && !dealWithTextNodes) {
       return node.value
     }
@@ -187,6 +194,11 @@ export function useVueMark(
     }
 
     switch (node.type) {
+      case 'yaml':
+      case 'definition':
+      case 'footnoteDefinition': {
+        return null
+      }
       case 'paragraph':
       case 'delete':
       case 'blockquote':
@@ -274,9 +286,10 @@ export function useVueMark(
         return h(element, { level: node.depth, slug }, () => children)
       }
       case 'table': {
-        const head = getRootComponent(node.children[0], 0, inFootnote, { aligns: node.align ?? [], isHead: true })
+        const aligns = node.align ?? []
+        const head = getRootComponent(node.children[0], 0, inFootnote, { aligns, isHead: true })
         const body = node.children.slice(1).map((child, i) =>
-          getRootComponent(child, i + 1, inFootnote, { aligns: node.align ?? [], isHead: false }),
+          getRootComponent(child, i + 1, inFootnote, { aligns, isHead: false }),
         )
         return h(
           element,
@@ -316,8 +329,8 @@ export function useVueMark(
       }
       default: {
         if (isParent(node)) {
-          const children = node.children.map((child, i) => getRootComponent(child, i, inFootnote))
-          return h(element, { item: node, index }, () => children)
+          const children = node.children
+          return h(element, { item: node, index }, () => children.map((child, i) => getRootComponent(child, i, inFootnote)))
         }
         return h(element, { item: node, index })
       }

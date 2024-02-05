@@ -4,3 +4,5 @@ export type {
   CustomDirective,
   FootnoteDefinitionMap,
 } from './types'
+
+export * from './utils'

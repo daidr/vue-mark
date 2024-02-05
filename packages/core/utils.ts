@@ -1,12 +1,11 @@
 import type { List, ListItem, Node, Parent, RootContent, Text } from 'mdast'
+import type { CustomDirective } from '.'
 
 export function isParent(node: Node): node is Parent {
   return 'children' in node
 }
 
-export type ParentWithName = Parent & { name: string }
-
-export function isCustomBlock(node: Node): node is ParentWithName {
+export function isCustomBlock(node: Node): node is CustomDirective {
   return (
     node.type === 'containerDirective'
     || node.type === 'leafDirective'
