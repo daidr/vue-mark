@@ -1,7 +1,6 @@
 /* eslint-disable no-console */
 import fs from 'node:fs'
 import packageJson from '../package.json'
-import corePackageJson from '../packages/core/package.json'
 
 async function run() {
   console.log('Running postbuild script')
@@ -43,15 +42,19 @@ async function run() {
     type: 'module',
     main: 'vuemark.umd.cjs',
     module: 'vuemark.js',
-    types: 'vuemark.d.ts',
+    types: 'index.d.ts',
     exports: {
       '.': {
         import: './vuemark.js',
         require: './vuemark.umd.cjs',
-        types: './vuemark.d.ts',
+        types: './index.d.ts',
       },
     },
-    dependencies: corePackageJson.devDependencies,
+    unpkg: 'vuemark.iife.js',
+    jsdelivr: 'vuemark.iife.js',
+    dependencies: {
+      '@types/mdast': '^4.0.3',
+    },
   }
 
   if (packageJson.author) {
