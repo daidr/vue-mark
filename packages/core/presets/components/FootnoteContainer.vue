@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import type { ShallowRef } from 'vue'
 import type { FootnoteDefinitionMap } from '../../types'
 
 defineProps<{
-  footnoteDefinitions: FootnoteDefinitionMap
+  footnoteDefinitions: ShallowRef<FootnoteDefinitionMap>
   globalPrefix: string
 }>()
 </script>
@@ -12,9 +13,9 @@ defineProps<{
     <h2 id="footnote-label" class="sr-only">
       Footnotes
     </h2>
-    <ol>
+    <ol v-if="[...footnoteDefinitions.value.keys()].length > 0">
       <li
-        v-for="footnote of (Object.values(footnoteDefinitions) as FootnoteDefinitionMap[string][])"
+        v-for="footnote of footnoteDefinitions.value.values()"
         :id="`user-content-${globalPrefix}-fn-${footnote.index + 1}`" :key="footnote.index"
       >
         <component :is="footnote.render" />

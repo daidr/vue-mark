@@ -11,12 +11,12 @@ const globalPrefix = inject<string>('globalPrefix')!
 <template>
   <sup>
     <a
-      :id="`user-content-${globalPrefix}-fnref-${index + 1}`"
-      :href="`#user-content-${globalPrefix}-fn-${index + 1}`"
+      :id="`user-content-${globalPrefix}-fnref-${index}`"
+      :href="`#user-content-${globalPrefix}-fn-${index}`"
       class="vuemark-footnote-ref"
       aria-describedby="footnote-label"
     >
-      {{ index + 1 }}
+      {{ index }}
     </a>
   </sup>
 </template>
