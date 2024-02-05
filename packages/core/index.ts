@@ -4,4 +4,3 @@ export type {
   CustomDirective,
   FootnoteDefinitionMap,
 } from './types'
-export type * from 'mdast'
