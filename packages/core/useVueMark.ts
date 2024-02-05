@@ -11,11 +11,11 @@ import {
   provide,
   shallowRef,
   toValue,
+  triggerRef,
   watch,
 } from 'vue'
 import type {
   Component,
-  ComputedRef,
   MaybeRefOrGetter,
   ShallowRef,
   VNode,
@@ -40,11 +40,14 @@ export interface UseVueMarkOptions {
   customPresets?: Partial<PresetConfig>
   globalPrefix?: string
   dealWithTextNodes?: boolean
+  debug?: boolean
+  slugify?: (text: string) => string
 }
 
 export interface VueMarkToc {
   level: number
   title: string
+  slug: string
 }
 
 export interface UseVueMarkReturn {
@@ -59,48 +62,64 @@ export function useVueMark(
   value: MaybeRefOrGetter<string>,
   options?: UseVueMarkOptions,
 ): UseVueMarkReturn {
-  const { customPresets = {} as PresetConfig, globalPrefix = 'vuemark', dealWithTextNodes = true }
+  const {
+    customPresets = {} as PresetConfig,
+    globalPrefix = 'vuemark',
+    dealWithTextNodes = true,
+    debug = false,
+    slugify,
+  }
     = options ?? {}
+
+  function debugPrintLn(...args: any[]) {
+    if (!debug) return
+    // eslint-disable-next-line no-console
+    console.log('%c VueMark ', 'color:white;background:#65B587;padding:3px 0;margin-bottom:5px;font-weight: bold;', ...args)
+  }
+
+  const _processStartTimes = new Map<string, number>()
+  function startTimeRecord(key: string) {
+    if (!debug) return
+    _processStartTimes.set(key, performance.now())
+  }
+
+  function endTimeRecord(key: string) {
+    if (!debug) return
+    const startTime = _processStartTimes.get(key)
+    if (startTime === undefined) {
+      return
+    }
+    const endTime = performance.now()
+    const duration = endTime - startTime
+    debugPrintLn(`${key} took ${duration}ms`)
+  }
+
   const computedValue = computed(() => toValue(value))
   const ast = computed(() => processor.parse(computedValue.value))
 
   const frontmatter = shallowRef('')
-  const toc: ComputedRef<VueMarkToc[]> = computed(() => {
-    const toc: VueMarkToc[] = []
-
-    ast.value.children.forEach((node) => {
-      if (node.type === 'heading') {
-        const level = node.depth
-        const title = getNodeTextContent(node)
-
-        const item: VueMarkToc = {
-          level,
-          title,
-        }
-
-        toc.push(item)
-      }
-    })
-
-    return toc
-  })
-  let definitions: Record<string, Definition> = {}
-  let footnoteDefinitions: FootnoteDefinitionMap = {}
+  const toc: ShallowRef<VueMarkToc[]> = shallowRef([])
   const hasFootnote = shallowRef(false)
 
+  const innerToc: VueMarkToc[] = []
+  const tocSlugCountMap: Map<string, number> = new Map()
+  const definitions: Map<string, Definition> = new Map()
+  const footnoteDefinitions: ShallowRef<FootnoteDefinitionMap> = shallowRef(new Map())
+  let footnoteDefinitionCount = 0
+
   const setDefinition = (node: Definition) => {
-    definitions[node.identifier] = node
+    definitions.set(node.identifier, node)
   }
 
   const setFootnoteDefinition = (
     node: FootnoteDefinition,
     render: () => VNode | string | null | (VNode | string | null)[],
   ) => {
-    footnoteDefinitions[node.identifier] = {
+    footnoteDefinitions.value.set(node.identifier, {
       node,
-      index: Object.keys(footnoteDefinitions).length,
+      index: ++footnoteDefinitionCount,
       render,
-    }
+    })
   }
 
   const getRootComponent = (
@@ -152,7 +171,8 @@ export function useVueMark(
       case 'blockquote':
       case 'strong':
       case 'emphasis': {
-        return h(element, () => node.children.map(getRootComponent))
+        const children = node.children.map(getRootComponent)
+        return h(element, () => children)
       }
       case 'break':
       case 'thematicBreak': {
@@ -168,35 +188,39 @@ export function useVueMark(
         return h(element, { code: node.value ? `${node.value}\n` : '', lang: node.lang ?? undefined, meta: node.meta ?? undefined })
       }
       case 'link': {
-        return h(element, { href: normalizeUri(node.url || ''), title: node.title ?? undefined }, () =>
-          node.children.map(getRootComponent))
+        const children = node.children.map(getRootComponent)
+        return h(element, { href: normalizeUri(node.url || ''), title: node.title ?? undefined }, () => children)
       }
       case 'list': {
         const hasTaskItem = node.children.some(child => child.type === 'listItem' && typeof child.checked === 'boolean')
+        const children = node.children.map((child, i) => getRootComponent(child, i, node))
         return h(element, { ordered: node.ordered ?? undefined, start: node.start ?? undefined, spread: node.spread ?? undefined, hasTaskItem }, () =>
-          node.children.map((child, i) => getRootComponent(child, i, node)))
+          children)
       }
       case 'listItem': {
         const parent = context as List
         const loose = parent ? listLoose(parent) : listItemLoose(node)
-        const children: RootContent[] = []
+        const childNodes: RootContent[] = []
         node.children.forEach((child) => {
           if (child.type === 'paragraph' && !loose) {
-            children.push(...child.children)
+            childNodes.push(...child.children)
           } else {
-            children.push(child)
+            childNodes.push(child)
           }
         })
+
+        const children = childNodes.map(getRootComponent)
+
         return h(element, {
           checked: node.checked ?? undefined,
           spread: node.spread ?? undefined,
-        }, () => children.map(getRootComponent))
+        }, () => children)
       }
       case 'image': {
         return h(element, { src: normalizeUri(node.url || ''), alt: node.alt ?? undefined, title: node.title ?? undefined })
       }
       case 'imageReference': {
-        const def = definitions[node.identifier]
+        const def = definitions.get(node.identifier)
         if (!def) {
           console.error(new Error(`No definition found for identifier: ${node.identifier}`))
           return null
@@ -204,29 +228,37 @@ export function useVueMark(
         return h(element, { src: normalizeUri(def.url || ''), title: def.title ?? undefined, alt: node.alt ?? undefined })
       }
       case 'linkReference': {
-        const def = definitions[node.identifier]
+        const def = definitions.get(node.identifier)
         if (!def) {
           console.error(new Error(`No definition found for identifier: ${node.identifier}`))
           return null
         }
-        return h(element, { href: normalizeUri(def.url || ''), title: def.title ?? undefined }, () =>
-          node.children.map(getRootComponent))
+        const children = node.children.map(getRootComponent)
+        return h(element, { href: normalizeUri(def.url || ''), title: def.title ?? undefined }, () => children)
       }
       case 'heading': {
-        // TODO: 使用另外的 slug 函数
-        return h(element, { depth: node.depth, slug: getNodeTextContent(node) }, () =>
-          node.children.map(getRootComponent))
+        const children = node.children.map(getRootComponent)
+        const title = getNodeTextContent(node)
+        let slug = slugify ? slugify(title) : title
+        const count = tocSlugCountMap.get(slug) ?? 0
+        tocSlugCountMap.set(slug, count + 1)
+        if (count > 0) {
+          slug += `-${count}`
+        }
+        innerToc.push({ level: node.depth, title, slug })
+        return h(element, { level: node.depth, slug }, () => children)
       }
       case 'table': {
+        const head = getRootComponent(node.children[0], 0, { aligns: node.align ?? [], isHead: true })
+        const body = node.children.slice(1).map((child, i) =>
+          getRootComponent(child, i + 1, { aligns: node.align ?? [], isHead: false }),
+        )
         return h(
           element,
           null,
           {
-            head: () => getRootComponent(node.children[0], 0, { aligns: node.align ?? [], isHead: true }),
-            body: () =>
-              node.children.slice(1).map((child, i) =>
-                getRootComponent(child, i + 1, { aligns: node.align ?? [], isHead: false }),
-              ),
+            head: () => head,
+            body: () => body,
           },
         )
       }
@@ -234,21 +266,33 @@ export function useVueMark(
         if (!context) return null
         const { aligns, isHead } = context
 
+        const children = node.children.map((child, i) => getRootComponent(child, i, { align: aligns[i], isHead }))
+
         return h(
           element,
-          () => node.children.map((child, i) => getRootComponent(child, i, { align: aligns[i], isHead })),
+          () => children,
         )
       }
       case 'tableCell': {
         if (!context) return null
         const { align, isHead } = context
 
-        return h(element, { align, isHead }, () => node.children.map(getRootComponent))
+        const children = node.children.map(getRootComponent)
+
+        return h(element, { align, isHead }, () => children)
+      }
+      case 'footnoteReference': {
+        const def = footnoteDefinitions.value.get(node.identifier)
+        if (!def) {
+          console.error(new Error(`No footnote definition found for identifier: ${node.identifier}`))
+          return null
+        }
+        return h(element, { index: def.index })
       }
       default: {
         if (isParent(node)) {
-          return h(element, { item: node, index }, () =>
-            node.children.map(getRootComponent))
+          const children = node.children.map(getRootComponent)
+          return h(element, { item: node, index }, () => children)
         }
         return h(element, { item: node, index })
       }
@@ -258,14 +302,17 @@ export function useVueMark(
   const markVNodes = shallowRef(processMarkVNodes(ast.value))
 
   function processMarkVNodes(root: Root) {
-    definitions = {}
-    footnoteDefinitions = {}
+    debugPrintLn('Start processing with root:', root)
+    startTimeRecord('processMarkVNodes')
+
     hasFootnote.value = false
     frontmatter.value = ''
+    footnoteDefinitions.value.clear()
 
     const tempMarkVNodes: (VNode | string | null)[] = []
     const deferred: [RootContent, number][] = []
 
+    startTimeRecord('processMarkVNodes:collectReferences')
     root.children.forEach((node, index) => {
       if (node.type === 'yaml') {
         frontmatter.value = node.value
@@ -278,20 +325,35 @@ export function useVueMark(
       }
 
       if (node.type === 'footnoteDefinition') {
-        setFootnoteDefinition(node, () => {
-          hasFootnote.value = true
-          return node.children.map(getRootComponent)
-        })
+        hasFootnote.value = true
+
+        const children = node.children.map(getRootComponent)
+
+        setFootnoteDefinition(node, () => children)
         return
       }
 
       deferred.push([node, index])
     })
+    endTimeRecord('processMarkVNodes:collectReferences')
 
+    startTimeRecord('processMarkVNodes:prepareVNodes')
     deferred.forEach(([node, index]) => {
       tempMarkVNodes.push(getRootComponent(node, index))
     })
+    endTimeRecord('processMarkVNodes:prepareVNodes')
 
+    toc.value = [...innerToc]
+
+    innerToc.length = 0
+    definitions.clear()
+    tocSlugCountMap.clear()
+    footnoteDefinitionCount = 0
+    triggerRef(footnoteDefinitions)
+
+    debugPrintLn('toc:', toc.value, '\nhasFootnote:', hasFootnote.value, '\nfrontmatter:', frontmatter.value)
+
+    endTimeRecord('processMarkVNodes')
     return tempMarkVNodes
   }
 
@@ -319,7 +381,7 @@ export function useVueMark(
         }
 
         if (typeof element === 'string') {
-          return h(element, Object.values(footnoteDefinitions).map(item => item.render()))
+          return h(element, Object.values(footnoteDefinitions.value).map(item => item.render()))
         }
 
         return h(element, {

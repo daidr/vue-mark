@@ -25,7 +25,7 @@ import type {
 } from 'mdast'
 import type { Component, VNode } from 'vue'
 
-export type FootnoteDefinitionMap = Record<
+export type FootnoteDefinitionMap = Map<
   string,
   {
     node: FootnoteDefinition

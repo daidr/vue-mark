@@ -85,6 +85,9 @@ importers:
       remark-parse:
         specifier: ^11.0.0
         version: 11.0.0
+      slug:
+        specifier: ^8.2.3
+        version: 8.2.3
       trim-lines:
         specifier: ^3.0.1
         version: 3.0.1
@@ -3811,6 +3814,11 @@ packages:
   /slash@3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
     engines: {node: '>=8'}
+    dev: true
+
+  /slug@8.2.3:
+    resolution: {integrity: sha512-fXjhAZszNecz855GUNIwW0+sFPi9WV4bMiEKDOCA4wcq1ts1UnUVNy/F78B0Aat7/W3rA+se//33ILKNMrbeYQ==}
+    hasBin: true
     dev: true
 
   /source-map-js@1.0.2:

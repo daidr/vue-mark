@@ -10,6 +10,7 @@
     "remark-frontmatter": "^5.0.0",
     "remark-gfm": "^4.0.0",
     "remark-parse": "^11.0.0",
+    "slug": "^8.2.3",
     "trim-lines": "^3.0.1",
     "unified": "^11.0.4"
   }

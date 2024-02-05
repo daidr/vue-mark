@@ -1,12 +1,16 @@
 <script setup lang="ts">
+import { inject } from 'vue'
+
 defineProps<{
-  depth: 1 | 2 | 3 | 4 | 5 | 6
+  level: 1 | 2 | 3 | 4 | 5 | 6
   slug: string
 }>()
+
+const globalPrefix = inject<string>('globalPrefix')!
 </script>
 
 <template>
-  <component :is="`h${depth}`" :id="`user-content-${slug}`">
+  <component :is="`h${level}`" :id="`user-content-${globalPrefix}-${slug}`">
     <slot />
   </component>
 </template>
