@@ -8,23 +8,40 @@
     "docs:build": "pnpm run -C docs build",
     "docs:preview": "pnpm run -C docs preview",
     "dev": "pnpm run -C packages/debug dev --host",
-    "build": "pnpm run -C packages/debug build && esno scripts/postbuild.ts"
+    "build": "esno scripts/build.mts && esno scripts/postbuild.mts"
   },
   "keywords": [
     "frontend",
     "markdown",
     "vue"
   ],
-  "author": "",
+  "author": {
+    "name": "daidr",
+    "url": "https://im.daidr.me"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/daidr/vue-mark.git"
+  },
   "license": "MIT",
   "devDependencies": {
     "@antfu/eslint-config": "^2.6.3",
     "@types/node": "^20.11.16",
+    "@vitejs/plugin-vue": "^5.0.3",
     "@vuemark/core": "workspace:*",
     "@vuemark/debug": "workspace:*",
     "eslint": "^8.56.0",
     "esno": "^4.0.0",
+    "rollup-plugin-visualizer": "^5.12.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "vite-plugin-dts": "^3.7.2",
     "vitepress": "1.0.0-rc.35",
     "vue": "^3.4.8"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "decode-named-character-reference@1.0.2": "patches/decode-named-character-reference@1.0.2.patch"
+    }
   }
 }

@@ -8,24 +8,6 @@ export default defineConfig({
     gzipSize: true,
     brotliSize: true,
     sourcemap: true,
-    filename: '../../stats.html',
+    filename: '../stats.html',
   })],
-  build: {
-    emptyOutDir: true,
-    sourcemap: true,
-    outDir: '../../dist',
-    lib: {
-      entry: '../core/index.ts',
-      name: 'VueMark',
-      fileName: 'vuemark',
-    },
-    rollupOptions: {
-      external: ['vue'],
-      output: {
-        globals: {
-          vue: 'Vue',
-        },
-      },
-    },
-  },
 })

@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  decode-named-character-reference@1.0.2:
+    hash: xxl5r7dw4ht2sey6e3nl47elh4
+    path: patches/decode-named-character-reference@1.0.2.patch
+
 importers:
 
   .:
@@ -14,6 +19,9 @@ importers:
       '@types/node':
         specifier: ^20.11.16
         version: 20.11.16
+      '@vitejs/plugin-vue':
+        specifier: ^5.0.3
+        version: 5.0.3(vite@5.0.11)(vue@3.4.8)
       '@vuemark/core':
         specifier: workspace:*
         version: link:packages/core
@@ -26,6 +34,18 @@ importers:
       esno:
         specifier: ^4.0.0
         version: 4.0.0
+      rollup-plugin-visualizer:
+        specifier: ^5.12.0
+        version: 5.12.0
+      typescript:
+        specifier: ^5.3.3
+        version: 5.3.3
+      vite:
+        specifier: ^5.0.10
+        version: 5.0.11(@types/node@20.11.16)
+      vite-plugin-dts:
+        specifier: ^3.7.2
+        version: 3.7.2(@types/node@20.11.16)(typescript@5.3.3)(vite@5.0.11)
       vitepress:
         specifier: 1.0.0-rc.35
         version: 1.0.0-rc.35(@algolia/client-search@4.22.0)(@types/node@20.11.16)(search-insights@2.13.0)(typescript@5.3.3)
@@ -72,23 +92,7 @@ importers:
         specifier: ^11.0.4
         version: 11.0.4
 
-  packages/debug:
-    devDependencies:
-      '@vitejs/plugin-vue':
-        specifier: ^5.0.3
-        version: 5.0.3(vite@5.0.11)(vue@3.4.8)
-      rollup-plugin-visualizer:
-        specifier: ^5.12.0
-        version: 5.12.0
-      typescript:
-        specifier: ^5.3.3
-        version: 5.3.3
-      vite:
-        specifier: ^5.0.10
-        version: 5.0.11(@types/node@20.11.16)
-      vite-plugin-dts:
-        specifier: ^3.7.2
-        version: 3.7.2(@types/node@20.11.16)(typescript@5.3.3)(vite@5.0.11)
+  packages/debug: {}
 
 packages:
 
@@ -1187,17 +1191,6 @@ packages:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
     dev: true
 
-  /@vitejs/plugin-vue@5.0.2(vite@5.0.11)(vue@3.4.8):
-    resolution: {integrity: sha512-kEjJHrLb5ePBvjD0SPZwJlw1QTRcjjCA9sB5VyfonoXVBxTS7TMnqL6EkLt1Eu61RDeiuZ/WN9Hf6PxXhPI2uA==}
-    engines: {node: ^18.0.0 || >=20.0.0}
-    peerDependencies:
-      vite: ^5.0.0
-      vue: ^3.2.25
-    dependencies:
-      vite: 5.0.11(@types/node@20.11.16)
-      vue: 3.4.8(typescript@5.3.3)
-    dev: true
-
   /@vitejs/plugin-vue@5.0.3(vite@5.0.11)(vue@3.4.8):
     resolution: {integrity: sha512-b8S5dVS40rgHdDrw+DQi/xOM9ed+kSRZzfm1T74bMmBDCd8XO87NKlFYInzCtwvtWwXZvo1QxE2OSspTATWrbA==}
     engines: {node: ^18.0.0 || >=20.0.0}
@@ -1712,11 +1705,12 @@ packages:
       ms: 2.1.2
     dev: true
 
-  /decode-named-character-reference@1.0.2:
+  /decode-named-character-reference@1.0.2(patch_hash=xxl5r7dw4ht2sey6e3nl47elh4):
     resolution: {integrity: sha512-O8x12RzrUF8xyVcY0KJowWsmaJxQbmy0/EtnNtHRpsOcT7dFk5W598coHqBVpmWo1oQQfsCqfCmkZN5DJrZVdg==}
     dependencies:
       character-entities: 2.0.2
     dev: true
+    patched: true
 
   /deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
@@ -2858,7 +2852,7 @@ packages:
     dependencies:
       '@types/mdast': 4.0.3
       '@types/unist': 3.0.2
-      decode-named-character-reference: 1.0.2
+      decode-named-character-reference: 1.0.2(patch_hash=xxl5r7dw4ht2sey6e3nl47elh4)
       devlop: 1.1.0
       mdast-util-to-string: 4.0.0
       micromark: 4.0.0
@@ -2996,7 +2990,7 @@ packages:
   /micromark-core-commonmark@2.0.0:
     resolution: {integrity: sha512-jThOz/pVmAYUtkroV3D5c1osFXAMv9e0ypGDOIZuCeAe91/sD6BoE2Sjzt30yuXtwOYUmySOhMas/PVyh02itA==}
     dependencies:
-      decode-named-character-reference: 1.0.2
+      decode-named-character-reference: 1.0.2(patch_hash=xxl5r7dw4ht2sey6e3nl47elh4)
       devlop: 1.1.0
       micromark-factory-destination: 2.0.0
       micromark-factory-label: 2.0.0
@@ -3186,7 +3180,7 @@ packages:
   /micromark-util-decode-string@2.0.0:
     resolution: {integrity: sha512-r4Sc6leeUTn3P6gk20aFMj2ntPwn6qpDZqWvYmAG6NgvFTIlj4WtrAudLi65qYoaGdXYViXYw2pkmn7QnIFasA==}
     dependencies:
-      decode-named-character-reference: 1.0.2
+      decode-named-character-reference: 1.0.2(patch_hash=xxl5r7dw4ht2sey6e3nl47elh4)
       micromark-util-character: 2.0.1
       micromark-util-decode-numeric-character-reference: 2.0.1
       micromark-util-symbol: 2.0.0
@@ -3251,7 +3245,7 @@ packages:
     dependencies:
       '@types/debug': 4.1.12
       debug: 4.3.4
-      decode-named-character-reference: 1.0.2
+      decode-named-character-reference: 1.0.2(patch_hash=xxl5r7dw4ht2sey6e3nl47elh4)
       devlop: 1.1.0
       micromark-core-commonmark: 2.0.0
       micromark-factory-space: 2.0.0
@@ -3454,7 +3448,7 @@ packages:
       character-entities: 2.0.2
       character-entities-legacy: 3.0.0
       character-reference-invalid: 2.0.1
-      decode-named-character-reference: 1.0.2
+      decode-named-character-reference: 1.0.2(patch_hash=xxl5r7dw4ht2sey6e3nl47elh4)
       is-alphanumerical: 2.0.1
       is-decimal: 2.0.1
       is-hexadecimal: 2.0.1
@@ -4206,7 +4200,7 @@ packages:
       '@docsearch/css': 3.5.2
       '@docsearch/js': 3.5.2(@algolia/client-search@4.22.0)(search-insights@2.13.0)
       '@types/markdown-it': 13.0.7
-      '@vitejs/plugin-vue': 5.0.2(vite@5.0.11)(vue@3.4.8)
+      '@vitejs/plugin-vue': 5.0.3(vite@5.0.11)(vue@3.4.8)
       '@vue/devtools-api': 6.5.1
       '@vueuse/core': 10.7.1(vue@3.4.8)
       '@vueuse/integrations': 10.7.1(focus-trap@7.5.4)(vue@3.4.8)
