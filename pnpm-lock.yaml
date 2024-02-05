@@ -16,6 +16,9 @@ importers:
       '@antfu/eslint-config':
         specifier: ^2.6.3
         version: 2.6.3(@vue/compiler-sfc@3.4.8)(eslint@8.56.0)(typescript@5.3.3)
+      '@types/mdast':
+        specifier: ^4.0.3
+        version: 4.0.3
       '@types/node':
         specifier: ^20.11.16
         version: 20.11.16
@@ -64,9 +67,6 @@ importers:
 
   packages/core:
     devDependencies:
-      '@types/mdast':
-        specifier: ^4.0.3
-        version: 4.0.3
       micromark-util-sanitize-uri:
         specifier: ^2.0.0
         version: 2.0.0

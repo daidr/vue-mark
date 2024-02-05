@@ -4,7 +4,6 @@
   "version": "0.0.0",
   "type": "module",
   "devDependencies": {
-    "@types/mdast": "^4.0.3",
     "micromark-util-sanitize-uri": "^2.0.0",
     "remark": "^15.0.1",
     "remark-directive": "^3.0.0",

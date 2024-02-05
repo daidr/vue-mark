@@ -77,22 +77,6 @@ export type PresetConfig = {
   [key in `directive_${string}`]: Component | string | null;
 }
 
-/**
- * 可以作为父级的part类型
- */
-export type ParentPartTypes =
-  | keyof ParentPartTypeMap
-  | 'footnoteDefinition'
-  | `directive_${string}`
-/**
- * 可以作为叶子的part类型
- */
-export type LeafPartTypes = keyof LeafPartTypeMap
-/**
- * 所有会在ast中出现的part类型
- */
-export type PartTypes = ParentPartTypes | LeafPartTypes
-/**
- * 可自定义的part类型，footnoteDefinition非可渲染part，会直接被内部处理，不允许自定义
- */
-export type CustomizablePartTypes = Exclude<PartTypes, 'footnoteDefinition'>
+export type DirectiveHandlerConfig = {
+  [key in `directive_${string}`]: (node: CustomDirective) => VNode | string | null
+}
