@@ -5,7 +5,7 @@ layout: home
 hero:
   name: "VueMark"
   text: "A customizable markdown rendering library for Vue.js"
-  tagline: My great project tagline
+  tagline: "Render markdown with Vue.js"
   actions:
     - theme: brand
       text: Markdown Examples
@@ -22,4 +22,3 @@ features:
   - title: Feature C
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 ---
-
