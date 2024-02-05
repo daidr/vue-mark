@@ -21,6 +21,7 @@ async function buildForBrowser() {
       rollupOptions: {
         external: ['vue'],
         output: {
+          chunkFileNames: '[name].js',
           globals: {
             vue: 'Vue',
           },
