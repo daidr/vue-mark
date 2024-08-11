@@ -1,6 +1,6 @@
 {
   "name": "vuemark",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "description": "A customizable markdown rendering library for Vue.js",
   "scripts": {
@@ -40,7 +40,5 @@
     "vue": "^3.4.37",
     "@types/mdast": "^4.0.4"
   },
-  "pnpm": {
-
-  }
+  "pnpm": {}
 }
