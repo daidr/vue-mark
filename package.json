@@ -41,8 +41,6 @@
     "@types/mdast": "^4.0.4"
   },
   "pnpm": {
-    "patchedDependencies": {
-      "decode-named-character-reference@1.0.2": "patches/decode-named-character-reference@1.0.2.patch"
-    }
+
   }
 }

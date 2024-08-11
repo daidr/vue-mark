@@ -4,11 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-patchedDependencies:
-  decode-named-character-reference@1.0.2:
-    hash: xxl5r7dw4ht2sey6e3nl47elh4
-    path: patches/decode-named-character-reference@1.0.2.patch
-
 importers:
 
   .:
@@ -3876,7 +3871,7 @@ snapshots:
     dependencies:
       ms: 2.1.2
 
-  decode-named-character-reference@1.0.2(patch_hash=xxl5r7dw4ht2sey6e3nl47elh4):
+  decode-named-character-reference@1.0.2:
     dependencies:
       character-entities: 2.0.2
 
@@ -4584,7 +4579,7 @@ snapshots:
     dependencies:
       '@types/mdast': 4.0.4
       '@types/unist': 3.0.2
-      decode-named-character-reference: 1.0.2(patch_hash=xxl5r7dw4ht2sey6e3nl47elh4)
+      decode-named-character-reference: 1.0.2
       devlop: 1.1.0
       mdast-util-to-string: 4.0.0
       micromark: 4.0.0
@@ -4691,7 +4686,7 @@ snapshots:
 
   micromark-core-commonmark@2.0.0:
     dependencies:
-      decode-named-character-reference: 1.0.2(patch_hash=xxl5r7dw4ht2sey6e3nl47elh4)
+      decode-named-character-reference: 1.0.2
       devlop: 1.1.0
       micromark-factory-destination: 2.0.0
       micromark-factory-label: 2.0.0
@@ -4841,7 +4836,7 @@ snapshots:
 
   micromark-util-decode-string@2.0.0:
     dependencies:
-      decode-named-character-reference: 1.0.2(patch_hash=xxl5r7dw4ht2sey6e3nl47elh4)
+      decode-named-character-reference: 1.0.2
       micromark-util-character: 2.0.1
       micromark-util-decode-numeric-character-reference: 2.0.1
       micromark-util-symbol: 2.0.0
@@ -4886,7 +4881,7 @@ snapshots:
     dependencies:
       '@types/debug': 4.1.12
       debug: 4.3.4
-      decode-named-character-reference: 1.0.2(patch_hash=xxl5r7dw4ht2sey6e3nl47elh4)
+      decode-named-character-reference: 1.0.2
       devlop: 1.1.0
       micromark-core-commonmark: 2.0.0
       micromark-factory-space: 2.0.0
@@ -5017,7 +5012,7 @@ snapshots:
       character-entities: 2.0.2
       character-entities-legacy: 3.0.0
       character-reference-invalid: 2.0.1
-      decode-named-character-reference: 1.0.2(patch_hash=xxl5r7dw4ht2sey6e3nl47elh4)
+      decode-named-character-reference: 1.0.2
       is-alphanumerical: 2.0.1
       is-decimal: 2.0.1
       is-hexadecimal: 2.0.1
