@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/daidr/vue-mark/compare/v1.1.0...v1.2.0) (2024-08-11)
+
+
+### Features
+
+* update deps ([16bdf3a](https://github.com/daidr/vue-mark/commit/16bdf3a04c2066eef5150ec1e76dd0a89edb2fc4))
+
 ## [1.1.0](https://github.com/daidr/vue-mark/compare/v1.0.0...v1.1.0) (2024-02-05)
 
 
