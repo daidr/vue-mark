@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.1.0](https://github.com/daidr/vue-mark/compare/v1.0.0...v1.1.0) (2024-02-05)
+
+
+### Features
+
+* debug support & more friendly toc ([58d402b](https://github.com/daidr/vue-mark/commit/58d402b6712c201893caac1d1fbbd67c3ebe2a5f))
+* html node fallback ([37632aa](https://github.com/daidr/vue-mark/commit/37632aac015bb2f9a93794d21ab4513a90d0c61d))
+* remove exported mdast types ([7db3665](https://github.com/daidr/vue-mark/commit/7db3665b729889b61d56cdb1b84994840f569b4f))
+
+
+### Bug Fixes
+
+* heading in footnote ([3c9e842](https://github.com/daidr/vue-mark/commit/3c9e842163a2678a5e94c4d06f051cdf0b3b55fb))
+* remove unnecessary deps & wrong type definitions ([5ca8fad](https://github.com/daidr/vue-mark/commit/5ca8fadfa376ad482a7113329c7670fd15d5948a))
+* update build script & patched deps for SSR support ([e4bbfa5](https://github.com/daidr/vue-mark/commit/e4bbfa5a511a0bed9b36baeaf12993ee81a4d04a))
+* wrong footnote index ([9911f48](https://github.com/daidr/vue-mark/commit/9911f483fc9271c8108d0f3baacdefac5927c1fd))
+
 ## 1.0.0 (2024-02-04)
 
 
