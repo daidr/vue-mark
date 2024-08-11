@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/daidr/vue-mark/compare/v1.2.1...v1.2.2) (2024-08-11)
+
+
+### Bug Fixes
+
+* release action ([e4915c7](https://github.com/daidr/vue-mark/commit/e4915c7d2b1317b9ecb5c016b9aa7854db408784))
+
 ## [1.2.1](https://github.com/daidr/vue-mark/compare/v1.2.0...v1.2.1) (2024-08-11)
 
 
